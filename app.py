@@ -88,12 +88,12 @@ if abas is None:
       " projeto!"
   )
 else:
-  # Estado da navegação guardado na sessão do Streamlit (Inicia na Tela de Boas-Vindas)
+  # Estado da navegação guardado na sessão do Streamlit
   if "nav_mode" not in st.session_state:
     st.session_state.nav_mode = "Home"
 
   # ==========================================
-  # TELA 1: SEJA BEM-VINDO (Página Inicial)
+  # TELA INICIAL: MENU DE ESCOLHA DE CATEGORIA
   # ==========================================
   if st.session_state.nav_mode == "Home":
     st.markdown(
@@ -102,13 +102,12 @@ else:
     )
     st.markdown(
         "<p style='text-align: center; color: #8b949e; font-size: 18px;'>Por"
-        " favor, selecione a opção que deseja consultar:</p>",
+        " favor, selecione a categoria que deseja consultar:</p>",
         unsafe_allow_html=True,
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Layout de botões centralizados / distribuídos
-    col_vazia1, b1, b2, b3, col_vazia2 = st.columns([1, 2, 2, 2, 1])
+    col_vazia1, b1, b2, col_vazia2 = st.columns([1.5, 3, 3, 1.5])
     with b1:
       if st.button("🟢 Produto Bom", use_container_width=True, type="primary"):
         st.session_state.nav_mode = "Produto Bom"
@@ -117,77 +116,74 @@ else:
       if st.button("🟡 Produto Ruim", use_container_width=True, type="primary"):
         st.session_state.nav_mode = "Produto Ruim"
         st.rerun()
-    with b3:
-      if st.button("🔍 Consultar Nota", use_container_width=True):
-        st.session_state.nav_mode = "🔍 Consultar Nota"
-        st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
-    col_vazia3, b4, b5, col_vazia4 = st.columns([1.5, 2, 2, 1.5])
-    with b4:
+    col_vazia3, b3, b4, col_vazia4 = st.columns([1.5, 3, 3, 1.5])
+    with b3:
       if st.button("🔴 Recusa", use_container_width=True, type="primary"):
         st.session_state.nav_mode = "Recusa"
         st.rerun()
-    with b5:
+    with b4:
       if st.button("🔵 Reentrega", use_container_width=True, type="primary"):
         st.session_state.nav_mode = "Reentrega"
         st.rerun()
 
   # ==========================================
-  # TELAS INTERNAS (Com botão de voltar)
+  # TELA DE CONSULTA ESPECÍFICA DA CATEGORIA
   # ==========================================
   else:
-    # Botão fixo no topo para voltar à tela inicial de boas-vindas
+    categoria_ativa = st.session_state.nav_mode
+
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
       st.rerun()
 
     st.markdown("---")
+    st.subheader(f"🔍 Consultar em: {categoria_ativa}")
 
-    # MODO: Consulta Direta de Chave/NF
-    if st.session_state.nav_mode == "🔍 Consultar Nota":
-      st.subheader("Consultar Nota Fiscal por Chave ou Número")
+    # Encontra a aba correspondente no Excel
+    aba_correspondente = None
+    for nome_aba in abas.keys():
+      if categoria_ativa.lower() in nome_aba.lower():
+        aba_correspondente = nome_aba
+        break
+
+    if aba_correspondente:
+      df_cat = abas[aba_correspondente]
+
       termo_busca = st.text_input(
-          "Digite a Chave de Acesso ou o Número da NF:",
+          f"Digite o Número da NF ou Chave de Acesso ({categoria_ativa}):",
           placeholder="Ex: 10457 ou 352610...",
       )
 
-      if st.button("Pesquisar Sistema", type="primary"):
+      if st.button("Pesquisar", type="primary"):
         if not termo_busca:
           st.warning("Por favor, digite um valor para pesquisar.")
         else:
+          df_str = df_cat.astype(str)
           encontrado = False
-          resultado_df = None
-          aba_encontrada = ""
+          resultado_row = None
 
-          for nome_aba, df in abas.items():
-            df_str = df.astype(str)
-            for col in df_str.columns:
-              matches = df_str[
-                  df_str[col].str.contains(str(termo_busca), na=False)
-              ]
-              if not matches.empty:
-                encontrado = True
-                resultado_df = matches.iloc[0]
-                aba_encontrada = nome_aba
-                break
-            if encontrado:
+          for col in df_str.columns:
+            matches = df_str[
+                df_str[col].str.contains(str(termo_busca), na=False)
+            ]
+            if not matches.empty:
+              encontrado = True
+              resultado_row = matches.iloc[0]
               break
 
           if encontrado:
-            st.success(
-                f"✨ Registo localizado na aba/categoria:"
-                f" **{aba_encontrada.upper()}**"
-            )
+            st.success(f"✨ Registo encontrado na categoria **{categoria_ativa}**!")
 
             colunas_disponiveis = {
-                c.lower().strip(): c for c in resultado_df.index
+                c.lower().strip(): c for c in resultado_row.index
             }
 
             def pegar_valor(possiveis_nomes):
               for nome in possiveis_nomes:
                 if nome.lower() in colunas_disponiveis:
-                  val = resultado_df[colunas_disponiveis[nome.lower()]]
+                  val = resultado_row[colunas_disponiveis[nome.lower()]]
                   return "N/D" if pd.isna(val) else val
               return "N/D"
 
@@ -197,6 +193,9 @@ else:
             chave = pegar_valor(["Chave de acesso", "Chave"])
             emissao = pegar_valor(["Data da emissão", "Emissão"])
             atualizacao = pegar_valor(["Data da atualização", "Última Atualiz."])
+            status_atual = str(
+                pegar_valor(["Status", "Situação"])
+            ).strip().lower()
 
             c1, c2 = st.columns(2)
             with c1:
@@ -207,32 +206,25 @@ else:
               st.info(f"**Chave de Acesso:**\n{chave}")
               st.info(f"**Emissão:** {emissao}")
               st.info(f"**Última Atualiz.:** {atualizacao}")
+
+            st.markdown("### Status Atual:")
+            if "conclu" in status_atual:
+              st.markdown("🟢 **Concluído**")
+            elif "process" in status_atual or "análise" in status_atual:
+              st.markdown("🟡 **Em processamento / Em Análise**")
+            else:
+              st.markdown(f"🔴 **{status_atual.capitalize()}**")
           else:
-            st.error("Nenhum registo encontrado com o termo informado.")
-
-    # MODOS DE CATEGORIAS (Produto Bom, Ruim, Recusa, Reentrega)
+            st.error(
+                f"Nenhum registo correspondente encontrado em '{categoria_ativa}'"
+                " com o termo informado."
+            )
     else:
-      categoria_ativa = st.session_state.nav_mode
-      st.subheader(f"📋 Registos da Categoria: {categoria_ativa}")
-
-      aba_correspondente = None
-      for nome_aba in abas.keys():
-        if categoria_ativa.lower() in nome_aba.lower():
-          aba_correspondente = nome_aba
-          break
-
-      if aba_correspondente:
-        df_cat = abas[aba_correspondente]
-        st.metric(
-            label="Total de Registos nesta Categoria", value=len(df_cat)
-        )
-        st.dataframe(df_cat.astype(str), use_container_width=True)
-      else:
-        st.warning(
-            f"Ainda não existe uma aba no Excel com o nome equivalente a"
-            f" '{categoria_ativa}'. Certifique-se de que o Excel possui uma aba"
-            f" com esse nome para visualizar os dados aqui automaticamente!"
-        )
+      st.warning(
+          f"Ainda não existe uma aba no Excel com o nome equivalente a"
+          f" '{categoria_ativa}'. Certifique-se de que o ficheiro Excel"
+          f" possui essa aba configurada!"
+      )
 
 st.markdown(
     '<div class="footer">© PepsiCo Brasil - Internal Tool | Sistema'
