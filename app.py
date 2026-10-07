@@ -9,6 +9,7 @@ st.set_page_config(
     layout="wide",
 )
 
+# Estilização CSS avançada estilo Dashdark X com cartões modernos
 st.markdown(
     """
     <style>
@@ -17,26 +18,33 @@ st.markdown(
             color: #c9d1d9;
         }
         .main-header {
-            font-size: 34px;
+            font-size: 32px;
             font-weight: 800;
             color: #ffffff;
             margin-bottom: 0px;
             line-height: 1.2;
         }
         .sub-header {
-            font-size: 16px;
+            font-size: 15px;
             color: #8b949e;
             margin-top: 5px;
         }
         .welcome-card {
-            background-color: #131b2e;
+            background: linear-gradient(135deg, #131b2e 0%, #0d1527 100%);
             border: 1px solid #1f293d;
             padding: 40px;
             border-radius: 16px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            max-width: 650px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            max-width: 600px;
             margin: 40px auto;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
         }
         .footer {
             position: fixed;
@@ -59,7 +67,7 @@ col_logo, col_titulo = st.columns([1.8, 5.5])
 
 with col_logo:
   try:
-    st.image("logo.png", width=260)
+    st.image("logo.png", width=240)
   except:
     st.write("🔵")
 
@@ -99,13 +107,16 @@ else:
   if "nav_mode" not in st.session_state:
     st.session_state.nav_mode = "Welcome"
 
+  # ==========================================
+  # TELA 1: SEJA BEM-VINDO
+  # ==========================================
   if st.session_state.nav_mode == "Welcome":
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
         """
         <div class="welcome-card">
-            <h1 style="color: white; font-size: 32px; margin-bottom: 10px;">Seja Bem-Vindo! 👋</h1>
-            <p style="color: #8b949e; font-size: 16px; margin-bottom: 30px;">
+            <h1 style="color: white; font-size: 28px; margin-bottom: 12px;">Seja Bem-Vindo! 👋</h1>
+            <p style="color: #8b949e; font-size: 15px; margin-bottom: 30px; line-height: 1.5;">
                 Sistema interno de consulta, gestão e análise operacional de Notas Fiscais e Slips da equipa PepsiCo.
             </p>
         </div>
@@ -121,61 +132,149 @@ else:
         st.session_state.nav_mode = "Home"
         st.rerun()
 
+  # ==========================================
+  # TELA 2: MENU PRINCIPAL (NOVO DESIGN MODERNO)
+  # ==========================================
   elif st.session_state.nav_mode == "Home":
-    if st.button("⬅️ Voltar à Tela Inicial"):
-      st.session_state.nav_mode = "Welcome"
-      st.rerun()
+    col_voltar, col_vazio = st.columns([1, 6])
+    with col_voltar:
+      if st.button("⬅️ Início"):
+        st.session_state.nav_mode = "Welcome"
+        st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
+
+    # Bloco 1: Consultas por Categoria
     st.markdown(
-        "<h3 style='text-align: center; color: white;'>Consultas por"
-        " Categoria</h3>",
+        '<p class="section-title">📂 Consultas e Gestão por Categoria</p>',
         unsafe_allow_html=True,
     )
-    st.markdown("<br>", unsafe_allow_html=True)
-
     c1, c2, c3, c4 = st.columns(4)
+
     with c1:
-      if st.button("🟢 Produto Bom", use_container_width=True):
+      st.markdown(
+          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
+          " padding: 15px; border-radius: 12px; text-align: center;'>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #238636; font-weight: bold; margin-bottom: 8px;'>🟢"
+          " Produto Bom</p>",
+          unsafe_allow_html=True,
+      )
+      if st.button("Consultar Bom", use_container_width=True, key="btn_bom"):
         st.session_state.nav_mode = "Produto Bom"
         st.rerun()
+      st.markdown("</div>", unsafe_allow_html=True)
+
     with c2:
-      if st.button("🔴 Produto Ruim", use_container_width=True):
+      st.markdown(
+          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
+          " padding: 15px; border-radius: 12px; text-align: center;'>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #da3633; font-weight: bold; margin-bottom: 8px;'>🔴"
+          " Produto Ruim</p>",
+          unsafe_allow_html=True,
+      )
+      if st.button(
+          "Consultar Ruim", use_container_width=True, key="btn_ruim"
+      ):
         st.session_state.nav_mode = "Produto Ruim"
         st.rerun()
+      st.markdown("</div>", unsafe_allow_html=True)
+
     with c3:
-      if st.button("🟡 Recusa", use_container_width=True):
+      st.markdown(
+          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
+          " padding: 15px; border-radius: 12px; text-align: center;'>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #d29922; font-weight: bold; margin-bottom: 8px;'>🟡"
+          " Recusa</p>",
+          unsafe_allow_html=True,
+      )
+      if st.button(
+          "Consultar Recusa", use_container_width=True, key="btn_recusa"
+      ):
         st.session_state.nav_mode = "Recusa"
         st.rerun()
+      st.markdown("</div>", unsafe_allow_html=True)
+
     with c4:
-      if st.button("🔵 Reentrega", use_container_width=True):
+      st.markdown(
+          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
+          " padding: 15px; border-radius: 12px; text-align: center;'>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #58a6ff; font-weight: bold; margin-bottom: 8px;'>🔵"
+          " Reentrega</p>",
+          unsafe_allow_html=True,
+      )
+      if st.button(
+          "Consultar Reentrega", use_container_width=True, key="btn_reentrega"
+      ):
         st.session_state.nav_mode = "Reentrega"
         st.rerun()
+      st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<br><hr style='border-color: #1f293d;'><br>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # Bloco 2: Painéis Analíticos
     st.markdown(
-        "<h3 style='text-align: center; color: white;'>Painéis Analíticos e"
-        " Gráficos Estáticos</h3>",
+        '<p class="section-title">📊 Painéis Analíticos e Gráficos Estáticos</p>',
         unsafe_allow_html=True,
     )
-    st.markdown("<br>", unsafe_allow_html=True)
-
     g1, g2 = st.columns(2)
+
     with g1:
-      if st.button(
-          "📊 Gráfico Fixo: Quantidade de NFs por Categoria",
-          use_container_width=True,
-      ):
+      st.markdown(
+          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
+          " padding: 20px; border-radius: 12px;'>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #ffffff; font-weight: 600;'>Volume de Notas"
+          " Fiscais</p>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #8b949e; font-size: 13px;'>Gráfico estatístico com"
+          " a quantidade de registos por categoria e filtro temporal.</p>",
+          unsafe_allow_html=True,
+      )
+      if st.button("📈 Ver Gráfico de Quantidade", use_container_width=True):
         st.session_state.nav_mode = "Grafico_Qtd"
         st.rerun()
+      st.markdown("</div>", unsafe_allow_html=True)
+
     with g2:
-      if st.button(
-          "💰 Gráfico Fixo: Valor Financeiro (P. Bom & P. Ruim)",
-          use_container_width=True,
-      ):
+      st.markdown(
+          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
+          " padding: 20px; border-radius: 12px;'>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #ffffff; font-weight: 600;'>Montante Financeiro"
+          " (R$)</p>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<p style='color: #8b949e; font-size: 13px;'>Análise de valores"
+          " envolvidos em Produto Bom e Produto Ruim com filtros.</p>",
+          unsafe_allow_html=True,
+      )
+      if st.button("💰 Ver Gráfico Financeiro", use_container_width=True):
         st.session_state.nav_mode = "Grafico_Valor"
         st.rerun()
+      st.markdown("</div>", unsafe_allow_html=True)
 
+  # ==========================================
+  # TELA 3: GRÁFICO ESTÁTICO DE QUANTIDADE
+  # ==========================================
   elif st.session_state.nav_mode == "Grafico_Qtd":
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
@@ -256,6 +355,9 @@ else:
 
     st.pyplot(fig)
 
+  # ==========================================
+  # TELA 4: GRÁFICO ESTÁTICO DE VALOR
+  # ==========================================
   elif st.session_state.nav_mode == "Grafico_Valor":
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
@@ -348,6 +450,9 @@ else:
     else:
       st.warning("Não há dados financeiros suficientes para exibir o gráfico.")
 
+  # ==========================================
+  # TELA 5: CONSULTA ESPECÍFICA DA CATEGORIA
+  # ==========================================
   else:
     categoria_ativa = st.session_state.nav_mode
 
@@ -390,7 +495,6 @@ else:
                 f" **{categoria_ativa}**!"
             )
 
-            # Exibe todos os resultados encontrados (caso haja duplicados com o mesmo número)
             for idx, row in matches_all.iterrows():
               colunas_disponiveis = {c.lower().strip(): c for c in row.index}
 
@@ -425,7 +529,6 @@ else:
                   st.info(f"**Chave de Acesso:**\n{chave}")
                   st.info(f"**Última Atualiz.:** {atualizacao}")
 
-                # Status com nomes limpos e padronizados
                 st.markdown("**Status Operacional:**")
                 if "conclu" in status_atual:
                   st.markdown("🟢 **Operação Concluída**")
