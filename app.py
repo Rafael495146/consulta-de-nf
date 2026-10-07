@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilização CSS avançada estilo Dashdark X com cartões modernos
+# Estilização CSS refinada para cartões corporativos limpos
 st.markdown(
     """
     <style>
@@ -133,7 +133,7 @@ else:
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU PRINCIPAL (NOVO DESIGN MODERNO)
+  # TELA 2: MENU PRINCIPAL (ESTILO CARTÕES)
   # ==========================================
   elif st.session_state.nav_mode == "Home":
     col_voltar, col_vazio = st.columns([1, 6])
@@ -152,30 +152,21 @@ else:
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
+      st.markdown("### 🟢 Produto Bom")
       st.markdown(
-          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
-          " padding: 15px; border-radius: 12px; text-align: center;'>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p style='color: #238636; font-weight: bold; margin-bottom: 8px;'>🟢"
-          " Produto Bom</p>",
+          "<p style='color: #8b949e; font-size: 13px;'>Consulta e verificação"
+          " de notas faturadas sem ocorrências.</p>",
           unsafe_allow_html=True,
       )
       if st.button("Consultar Bom", use_container_width=True, key="btn_bom"):
         st.session_state.nav_mode = "Produto Bom"
         st.rerun()
-      st.markdown("</div>", unsafe_allow_html=True)
 
     with c2:
+      st.markdown("### 🔴 Produto Ruim")
       st.markdown(
-          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
-          " padding: 15px; border-radius: 12px; text-align: center;'>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p style='color: #da3633; font-weight: bold; margin-bottom: 8px;'>🔴"
-          " Produto Ruim</p>",
+          "<p style='color: #8b949e; font-size: 13px;'>Gestão e análise de"
+          " notas com avarias ou devoluções.</p>",
           unsafe_allow_html=True,
       )
       if st.button(
@@ -183,17 +174,12 @@ else:
       ):
         st.session_state.nav_mode = "Produto Ruim"
         st.rerun()
-      st.markdown("</div>", unsafe_allow_html=True)
 
     with c3:
+      st.markdown("### 🟡 Recusa")
       st.markdown(
-          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
-          " padding: 15px; border-radius: 12px; text-align: center;'>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p style='color: #d29922; font-weight: bold; margin-bottom: 8px;'>🟡"
-          " Recusa</p>",
+          "<p style='color: #8b949e; font-size: 13px;'>Acompanhamento de"
+          " recusas de entrega efetuadas pelo cliente.</p>",
           unsafe_allow_html=True,
       )
       if st.button(
@@ -201,17 +187,12 @@ else:
       ):
         st.session_state.nav_mode = "Recusa"
         st.rerun()
-      st.markdown("</div>", unsafe_allow_html=True)
 
     with c4:
+      st.markdown("### 🔵 Reentrega")
       st.markdown(
-          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
-          " padding: 15px; border-radius: 12px; text-align: center;'>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p style='color: #58a6ff; font-weight: bold; margin-bottom: 8px;'>🔵"
-          " Reentrega</p>",
+          "<p style='color: #8b949e; font-size: 13px;'>Monitorização de notas"
+          " programadas para nova rota.</p>",
           unsafe_allow_html=True,
       )
       if st.button(
@@ -219,9 +200,10 @@ else:
       ):
         st.session_state.nav_mode = "Reentrega"
         st.rerun()
-      st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown(
+        "<br><hr style='border-color: #1f293d;'><br>", unsafe_allow_html=True
+    )
 
     # Bloco 2: Painéis Analíticos
     st.markdown(
@@ -231,46 +213,27 @@ else:
     g1, g2 = st.columns(2)
 
     with g1:
-      st.markdown(
-          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
-          " padding: 20px; border-radius: 12px;'>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p style='color: #ffffff; font-weight: 600;'>Volume de Notas"
-          " Fiscais</p>",
-          unsafe_allow_html=True,
-      )
+      st.markdown("#### 📈 Volume de Notas Fiscais")
       st.markdown(
           "<p style='color: #8b949e; font-size: 13px;'>Gráfico estatístico com"
-          " a quantidade de registos por categoria e filtro temporal.</p>",
+          " a quantidade de registos por categoria e filtro temporal de"
+          " emissão.</p>",
           unsafe_allow_html=True,
       )
-      if st.button("📈 Ver Gráfico de Quantidade", use_container_width=True):
+      if st.button("Ver Gráfico de Quantidade", use_container_width=True):
         st.session_state.nav_mode = "Grafico_Qtd"
         st.rerun()
-      st.markdown("</div>", unsafe_allow_html=True)
 
     with g2:
-      st.markdown(
-          "<div style='background-color: #131b2e; border: 1px solid #1f293d;"
-          " padding: 20px; border-radius: 12px;'>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p style='color: #ffffff; font-weight: 600;'>Montante Financeiro"
-          " (R$)</p>",
-          unsafe_allow_html=True,
-      )
+      st.markdown("#### 💰 Montante Financeiro (R$)")
       st.markdown(
           "<p style='color: #8b949e; font-size: 13px;'>Análise de valores"
-          " envolvidos em Produto Bom e Produto Ruim com filtros.</p>",
+          " envolvidos em Produto Bom e Produto Ruim com filtros dinâmicos.</p>",
           unsafe_allow_html=True,
       )
-      if st.button("💰 Ver Gráfico Financeiro", use_container_width=True):
+      if st.button("Ver Gráfico Financeiro", use_container_width=True):
         st.session_state.nav_mode = "Grafico_Valor"
         st.rerun()
-      st.markdown("</div>", unsafe_allow_html=True)
 
   # ==========================================
   # TELA 3: GRÁFICO ESTÁTICO DE QUANTIDADE
