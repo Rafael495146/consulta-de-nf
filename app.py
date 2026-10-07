@@ -3,14 +3,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
-# Configuração da página com tema corporativo escuro
 st.set_page_config(
     page_title="PepsiCo - Painel Operacional",
     page_icon="🔵",
     layout="wide",
 )
 
-# Estilização CSS avançada estilo Dashdark X
 st.markdown(
     """
     <style>
@@ -57,7 +55,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Cabeçalho com Logotipo e títulos
 col_logo, col_titulo = st.columns([1.8, 5.5])
 
 with col_logo:
@@ -83,7 +80,6 @@ st.markdown("---")
 ARQUIVO_EXCEL = "base_slips_nfs.xlsx"
 
 
-# Função para carregar os dados
 @st.cache_data(ttl=2)
 def carregar_dados():
   try:
@@ -103,9 +99,6 @@ else:
   if "nav_mode" not in st.session_state:
     st.session_state.nav_mode = "Welcome"
 
-  # ==========================================
-  # TELA 1: SEJA BEM-VINDO
-  # ==========================================
   if st.session_state.nav_mode == "Welcome":
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
@@ -128,9 +121,6 @@ else:
         st.session_state.nav_mode = "Home"
         st.rerun()
 
-  # ==========================================
-  # TELA 2: MENU PRINCIPAL
-  # ==========================================
   elif st.session_state.nav_mode == "Home":
     if st.button("⬅️ Voltar à Tela Inicial"):
       st.session_state.nav_mode = "Welcome"
@@ -186,9 +176,6 @@ else:
         st.session_state.nav_mode = "Grafico_Valor"
         st.rerun()
 
-  # ==========================================
-  # TELA 3: GRÁFICO ESTÁTICO DE QUANTIDADE + FILTRO
-  # ==========================================
   elif st.session_state.nav_mode == "Grafico_Qtd":
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
@@ -199,7 +186,6 @@ else:
         "📊 Quantidade de Notas Fiscais por Categoria (Gráfico Fixo)"
     )
 
-    # Filtro de Período (Mês/Ano) recolhido de todas as abas
     todas_linhas = []
     for nome_aba, df in abas.items():
       df_temp = df.copy()
@@ -207,8 +193,6 @@ else:
       todas_linhas.append(df_temp)
 
     df_geral = pd.concat(todas_linhas, ignore_index=True)
-
-    # Extrai Ano-Mês da coluna de emissão se existir
     col_emissao = None
     for c in df_geral.columns:
       if "emiss" in c.lower():
@@ -227,14 +211,11 @@ else:
       mes_selecionado = st.selectbox(
           "📅 Filtrar por Mês/Ano (Emissão):", meses_disponiveis
       )
-
       if mes_selecionado != "Todos":
         df_geral = df_geral[df_geral["AnoMes"] == mes_selecionado]
 
-    # Calcula quantidades filtradas
     contagem_dados = {}
-    categorias_alvo = ["Produto Bom", "Produto Ruim", "Recusa", "Reentrega"]
-    for cat in categorias_alvo:
+    for cat in ["Produto Bom", "Produto Ruim", "Recusa", "Reentrega"]:
       qtd = len(
           df_geral[
               df_geral["Categoria_Aba"].str.lower().str.contains(cat.lower())
@@ -242,19 +223,17 @@ else:
       )
       contagem_dados[cat] = qtd
 
-    # Desenha o gráfico estático com Matplotlib (não mexe ao passar o rato)
     fig, ax = plt.subplots(figsize=(8, 4.5))
     fig.patch.set_facecolor("#131b2e")
     ax.set_facecolor("#131b2e")
 
-    categorias = list(contagem_dados.keys())
-    quantidades = list(contagem_dados.values())
-    carr_cores = ["#238636", "#da3633", "#9e6a03", "#1f6feb"]
-
     bars = ax.bar(
-        categorias, quantidades, color=carr_cores, width=0.5, edgecolor="none"
+        list(contagem_dados.keys()),
+        list(contagem_dados.values()),
+        color=["#238636", "#da3633", "#9e6a03", "#1f6feb"],
+        width=0.5,
+        edgecolor="none",
     )
-
     ax.tick_params(colors="#c9d1d9", labelsize=11)
     ax.spines["bottom"].set_color("#30363d")
     ax.spines["top"].set_visible(False)
@@ -277,9 +256,6 @@ else:
 
     st.pyplot(fig)
 
-  # ==========================================
-  # TELA 4: GRÁFICO ESTÁTICO DE VALOR + FILTRO
-  # ==========================================
   elif st.session_state.nav_mode == "Grafico_Valor":
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
@@ -299,7 +275,6 @@ else:
 
     if todas_linhas_val:
       df_val_geral = pd.concat(todas_linhas_val, ignore_index=True)
-
       col_emissao = None
       for c in df_val_geral.columns:
         if "emiss" in c.lower():
@@ -318,7 +293,6 @@ else:
         mes_selecionado = st.selectbox(
             "📅 Filtrar por Mês/Ano (Emissão):", meses_disponiveis
         )
-
         if mes_selecionado != "Todos":
           df_val_geral = df_val_geral[df_val_geral["AnoMes"] == mes_selecionado]
 
@@ -333,28 +307,23 @@ else:
             col_val = c
             break
         if col_val:
-          soma_val = pd.to_numeric(df_subset[col_val], errors="coerce").sum()
-          valores_dados[cat] = round(soma_val, 2)
+          valores_dados[cat] = round(
+              pd.to_numeric(df_subset[col_val], errors="coerce").sum(), 2
+          )
         else:
           valores_dados[cat] = 0.0
 
-      # Desenha gráfico estático de valores
       fig, ax = plt.subplots(figsize=(7, 4.5))
       fig.patch.set_facecolor("#131b2e")
       ax.set_facecolor("#131b2e")
 
-      categorias = list(valores_dados.keys())
-      valores = list(valores_dados.values())
-      carr_cores = ["#238636", "#da3633"]
-
       bars = ax.bar(
-          categorias,
-          valores,
-          color=carr_cores,
+          list(valores_dados.keys()),
+          list(valores_dados.values()),
+          color=["#238636", "#da3633"],
           width=0.4,
           edgecolor="none",
       )
-
       ax.tick_params(colors="#c9d1d9", labelsize=11)
       ax.spines["bottom"].set_color("#30363d")
       ax.spines["top"].set_visible(False)
@@ -379,9 +348,6 @@ else:
     else:
       st.warning("Não há dados financeiros suficientes para exibir o gráfico.")
 
-  # ==========================================
-  # TELA 5: CONSULTA ESPECÍFICA DA CATEGORIA
-  # ==========================================
   else:
     categoria_ativa = st.session_state.nav_mode
 
@@ -411,61 +377,66 @@ else:
           st.warning("Por favor, digite um valor para pesquisar.")
         else:
           df_str = df_cat.astype(str)
-          encontrado = False
-          resultado_row = None
+          matches_all = pd.DataFrame()
 
           for col in df_str.columns:
-            matches = df_str[
-                df_str[col].str.contains(str(termo_busca), na=False)
-            ]
-            if not matches.empty:
-              encontrado = True
-              resultado_row = matches.iloc[0]
-              break
+            sub = df_str[df_str[col].str.contains(str(termo_busca), na=False)]
+            if not sub.empty:
+              matches_all = pd.concat([matches_all, sub]).drop_duplicates()
 
-          if encontrado:
-            st.success(f"✨ Registo encontrado na categoria **{categoria_ativa}**!")
+          if not matches_all.empty:
+            st.success(
+                f"✨ Encontrado(s) {len(matches_all)} registo(s) na categoria"
+                f" **{categoria_ativa}**!"
+            )
 
-            colunas_disponiveis = {
-                c.lower().strip(): c for c in resultado_row.index
-            }
+            # Exibe todos os resultados encontrados (caso haja duplicados com o mesmo número)
+            for idx, row in matches_all.iterrows():
+              colunas_disponiveis = {c.lower().strip(): c for c in row.index}
 
-            def pegar_valor(possiveis_nomes):
-              for nome in possiveis_nomes:
-                if nome.lower() in colunas_disponiveis:
-                  val = resultado_row[colunas_disponiveis[nome.lower()]]
-                  return "N/D" if pd.isna(val) else val
-              return "N/D"
+              def pegar_val(nomes):
+                for n in nomes:
+                  if n.lower() in colunas_disponiveis:
+                    val = row[colunas_disponiveis[n.lower()]]
+                    return "N/D" if pd.isna(val) else val
+                return "N/D"
 
-            cnpj = pegar_valor(["CNPJ"])
-            num_nf = pegar_valor(["Numero_NF", "Número da NF", "NF", "Nota"])
-            valor = pegar_valor(["Valor da NF", "Valor", "R$"])
-            chave = pegar_valor(["Chave de acesso", "Chave"])
-            emissao = pegar_valor(["Data da emissão", "Emissão"])
-            atualizacao = pegar_valor(["Data da atualização", "Última Atualiz."])
-            status_atual = str(
-                pegar_valor(["Status", "Situação"])
-            ).strip().lower()
+              cliente = pegar_val(["Nome_Cliente", "Cliente"])
+              cnpj = pegar_val(["CNPJ"])
+              num_nf = pegar_val(["Numero_NF", "Número da NF", "NF", "Nota"])
+              valor = pegar_val(["Valor da NF", "Valor", "R$"])
+              chave = pegar_val(["Chave de acesso", "Chave"])
+              emissao = pegar_val(["Data da emissão", "Emissão"])
+              atualizacao = pegar_val(["Data da atualização", "Última Atualiz."])
+              status_atual = str(
+                  pegar_val(["Status", "Situação"])
+              ).strip().lower()
 
-            c1, c2 = st.columns(2)
-            with c1:
-              st.info(f"**CNPJ:** {cnpj}")
-              st.info(f"**Número da NF:** {num_nf}")
-              st.info(f"**Valor:** R$ {valor}")
-            with c2:
-              st.info(f"**Chave de Acesso:**\n{chave}")
-              st.info(f"**Emissão:** {emissao}")
-              st.info(f"**Última Atualiz.:** {atualizacao}")
+              with st.container():
+                st.markdown(
+                    f"--- \n **🏢 Cliente:** `{cliente}` | **CNPJ:** `{cnpj}`"
+                )
+                c1, c2 = st.columns(2)
+                with c1:
+                  st.info(f"**Número da NF:** {num_nf}")
+                  st.info(f"**Valor:** R$ {valor}")
+                  st.info(f"**Emissão:** {emissao}")
+                with c2:
+                  st.info(f"**Chave de Acesso:**\n{chave}")
+                  st.info(f"**Última Atualiz.:** {atualizacao}")
 
-            st.markdown("### Status Atual:")
-            if "conclu" in status_atual:
-              st.markdown("🟢 **Concluído**")
-            elif "process" in status_atual or "análise" in status_atual:
-              st.markdown("🟡 **Em processamento / Em Análise**")
-            elif "pendente" in status_atual:
-              st.markdown("🟠 **Pendente**")
-            else:
-              st.markdown(f"🔴 **{status_atual.capitalize()}**")
+                # Status com nomes limpos e padronizados
+                st.markdown("**Status Operacional:**")
+                if "conclu" in status_atual:
+                  st.markdown("🟢 **Operação Concluída**")
+                elif "process" in status_atual:
+                  st.markdown("🟡 **Em Processamento na Logística**")
+                elif "pendente" in status_atual:
+                  st.markdown("🟠 **Pendente de Aprovação**")
+                elif "não entregue" in status_atual or "nao entregue" in status_atual:
+                  st.markdown("🔴 **Não Entregue / Ocorrência**")
+                else:
+                  st.markdown(f"🔴 **{status_atual.capitalize()}**")
           else:
             st.error(
                 f"Nenhum registo correspondente encontrado em '{categoria_ativa}'"
