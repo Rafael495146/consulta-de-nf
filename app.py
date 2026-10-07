@@ -9,12 +9,12 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilização CSS refinada para cartões corporativos limpos
+# Estilização CSS avançada estilo Dashdark X com cartões em vidro fosco (Glassmorphism)
 st.markdown(
     """
     <style>
         .stApp {
-            background-color: #0b0f19;
+            background: linear-gradient(135deg, #070a12 0%, #0b0f19 50%, #101827 100%);
             color: #c9d1d9;
         }
         .main-header {
@@ -30,12 +30,13 @@ st.markdown(
             margin-top: 5px;
         }
         .welcome-card {
-            background: linear-gradient(135deg, #131b2e 0%, #0d1527 100%);
-            border: 1px solid #1f293d;
+            background: rgba(19, 27, 46, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 40px;
             border-radius: 16px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             max-width: 600px;
             margin: 40px auto;
         }
@@ -43,15 +44,53 @@ st.markdown(
             font-size: 20px;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             letter-spacing: 0.5px;
         }
+        /* Cartões Estilizados */
+        .card-bom {
+            background: rgba(19, 27, 46, 0.7);
+            border: 2px solid #238636;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(35, 134, 54, 0.15);
+            margin-bottom: 15px;
+        }
+        .card-ruim {
+            background: rgba(19, 27, 46, 0.7);
+            border: 2px solid #da3633;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(218, 54, 51, 0.15);
+            margin-bottom: 15px;
+        }
+        .card-recusa {
+            background: rgba(19, 27, 46, 0.7);
+            border: 2px solid #d29922;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(210, 153, 34, 0.15);
+            margin-bottom: 15px;
+        }
+        .card-reentrega {
+            background: rgba(19, 27, 46, 0.7);
+            border: 2px solid #1f6feb;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(31, 111, 235, 0.15);
+            margin-bottom: 15px;
+        }
+        .card-title-bom { color: #238636; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .card-title-ruim { color: #da3633; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .card-title-recusa { color: #d29922; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .card-title-reentrega { color: #58a6ff; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .card-desc { color: #8b949e; font-size: 13px; margin-bottom: 15px; line-height: 1.4; min-height: 38px; }
         .footer {
             position: fixed;
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #0b0f19;
+            background-color: #070a12;
             color: #8b949e;
             text-align: center;
             padding: 8px;
@@ -133,7 +172,7 @@ else:
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU PRINCIPAL (ESTILO CARTÕES)
+  # TELA 2: MENU PRINCIPAL (ESTILO REFERÊNCIA)
   # ==========================================
   elif st.session_state.nav_mode == "Home":
     col_voltar, col_vazio = st.columns([1, 6])
@@ -144,29 +183,36 @@ else:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Bloco 1: Consultas por Categoria
     st.markdown(
         '<p class="section-title">📂 Consultas e Gestão por Categoria</p>',
         unsafe_allow_html=True,
     )
     c1, c2, c3, c4 = st.columns(4)
 
+    # Cartão 1: Produto Bom
     with c1:
-      st.markdown("### 🟢 Produto Bom")
       st.markdown(
-          "<p style='color: #8b949e; font-size: 13px;'>Consulta e verificação"
-          " de notas faturadas sem ocorrências.</p>",
+          """
+            <div class="card-bom">
+                <div class="card-title-bom">🟢 Produto Bom</div>
+                <div class="card-desc">Consulta e verificação de notas faturadas sem ocorrências operacionais.</div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
       if st.button("Consultar Bom", use_container_width=True, key="btn_bom"):
         st.session_state.nav_mode = "Produto Bom"
         st.rerun()
 
+    # Cartão 2: Produto Ruim
     with c2:
-      st.markdown("### 🔴 Produto Ruim")
       st.markdown(
-          "<p style='color: #8b949e; font-size: 13px;'>Gestão e análise de"
-          " notas com avarias ou devoluções.</p>",
+          """
+            <div class="card-ruim">
+                <div class="card-title-ruim">🔴 Ruim</div>
+                <div class="card-desc">Gestão e análise de notas fiscais com avarias ou devoluções detetadas.</div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
       if st.button(
@@ -175,11 +221,15 @@ else:
         st.session_state.nav_mode = "Produto Ruim"
         st.rerun()
 
+    # Cartão 3: Recusa
     with c3:
-      st.markdown("### 🟡 Recusa")
       st.markdown(
-          "<p style='color: #8b949e; font-size: 13px;'>Acompanhamento de"
-          " recusas de entrega efetuadas pelo cliente.</p>",
+          """
+            <div class="card-recusa">
+                <div class="card-title-recusa">🟡 Recusa</div>
+                <div class="card-desc">Acompanhamento de recusas de entrega efetuadas pelo cliente na receção.</div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
       if st.button(
@@ -188,11 +238,15 @@ else:
         st.session_state.nav_mode = "Recusa"
         st.rerun()
 
+    # Cartão 4: Reentrega
     with c4:
-      st.markdown("### 🔵 Reentrega")
       st.markdown(
-          "<p style='color: #8b949e; font-size: 13px;'>Monitorização de notas"
-          " programadas para nova rota.</p>",
+          """
+            <div class="card-reentrega">
+                <div class="card-title-reentrega">🔵 Reentrega</div>
+                <div class="card-desc">Monitorização de notas programadas para novas rotas de entrega.</div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
       if st.button(
@@ -213,11 +267,13 @@ else:
     g1, g2 = st.columns(2)
 
     with g1:
-      st.markdown("#### 📈 Volume de Notas Fiscais")
       st.markdown(
-          "<p style='color: #8b949e; font-size: 13px;'>Gráfico estatístico com"
-          " a quantidade de registos por categoria e filtro temporal de"
-          " emissão.</p>",
+          """
+            <div style="background: rgba(19, 27, 46, 0.7); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; margin-bottom: 15px;">
+                <div style="color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 8px;">📈 Volume de Notas Fiscais</div>
+                <div style="color: #8b949e; font-size: 13px; margin-bottom: 15px; line-height: 1.4; min-height: 38px;">Gráfico estatístico com a quantidade de registos por categoria e filtro temporal.</div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
       if st.button("Ver Gráfico de Quantidade", use_container_width=True):
@@ -225,10 +281,13 @@ else:
         st.rerun()
 
     with g2:
-      st.markdown("#### 💰 Montante Financeiro (R$)")
       st.markdown(
-          "<p style='color: #8b949e; font-size: 13px;'>Análise de valores"
-          " envolvidos em Produto Bom e Produto Ruim com filtros dinâmicos.</p>",
+          """
+            <div style="background: rgba(19, 27, 46, 0.7); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; margin-bottom: 15px;">
+                <div style="color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 8px;">💰 Montante Financeiro (R$)</div>
+                <div style="color: #8b949e; font-size: 13px; margin-bottom: 15px; line-height: 1.4; min-height: 38px;">Análise de valores envolvidos em Produto Bom e Produto Ruim com filtros.</div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
       if st.button("Ver Gráfico Financeiro", use_container_width=True):
