@@ -1,4 +1,5 @@
 from datetime import datetime
+import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
@@ -99,7 +100,6 @@ if abas is None:
       " projeto!"
   )
 else:
-  # Estado da navegação guardado na sessão do Streamlit
   if "nav_mode" not in st.session_state:
     st.session_state.nav_mode = "Welcome"
 
@@ -129,7 +129,7 @@ else:
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU PRINCIPAL (Categorias + Gráficos)
+  # TELA 2: MENU PRINCIPAL
   # ==========================================
   elif st.session_state.nav_mode == "Home":
     if st.button("⬅️ Voltar à Tela Inicial"):
@@ -144,7 +144,6 @@ else:
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Botões das 4 categorias
     c1, c2, c3, c4 = st.columns(4)
     with c1:
       if st.button("🟢 Produto Bom", use_container_width=True):
@@ -166,29 +165,29 @@ else:
     st.markdown("<br><hr style='border-color: #1f293d;'><br>", unsafe_allow_html=True)
     st.markdown(
         "<h3 style='text-align: center; color: white;'>Painéis Analíticos e"
-        " Gráficos</h3>",
+        " Gráficos Estáticos</h3>",
         unsafe_allow_html=True,
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Botões dos Gráficos
     g1, g2 = st.columns(2)
     with g1:
       if st.button(
-          "📊 Gráfico: Quantidade de NFs por Categoria", use_container_width=True
+          "📊 Gráfico Fixo: Quantidade de NFs por Categoria",
+          use_container_width=True,
       ):
         st.session_state.nav_mode = "Grafico_Qtd"
         st.rerun()
     with g2:
       if st.button(
-          "💰 Gráfico: Valor Financeiro (P. Bom & P. Ruim)",
+          "💰 Gráfico Fixo: Valor Financeiro (P. Bom & P. Ruim)",
           use_container_width=True,
       ):
         st.session_state.nav_mode = "Grafico_Valor"
         st.rerun()
 
   # ==========================================
-  # TELA 3: GRÁFICO DE QUANTIDADE DE NFs
+  # TELA 3: GRÁFICO ESTÁTICO DE QUANTIDADE + FILTRO
   # ==========================================
   elif st.session_state.nav_mode == "Grafico_Qtd":
     if st.button("⬅️ Voltar ao Menu Principal"):
@@ -197,31 +196,89 @@ else:
 
     st.markdown("---")
     st.subheader(
-        "📊 Quantidade de Notas Fiscais Recebidas por Categoria"
-    )
-    st.markdown(
-        "<p style='color: #8b949e;'>Volume total de registos processados em cada"
-        " aba da base de dados.</p>",
-        unsafe_allow_html=True,
+        "📊 Quantidade de Notas Fiscais por Categoria (Gráfico Fixo)"
     )
 
+    # Filtro de Período (Mês/Ano) recolhido de todas as abas
+    todas_linhas = []
+    for nome_aba, df in abas.items():
+      df_temp = df.copy()
+      df_temp["Categoria_Aba"] = nome_aba
+      todas_linhas.append(df_temp)
+
+    df_geral = pd.concat(todas_linhas, ignore_index=True)
+
+    # Extrai Ano-Mês da coluna de emissão se existir
+    col_emissao = None
+    for c in df_geral.columns:
+      if "emiss" in c.lower():
+        col_emissao = c
+        break
+
+    if col_emissao:
+      df_geral["AnoMes"] = (
+          pd.to_datetime(df_geral[col_emissao], errors="coerce")
+          .dt.strftime("%Y-%m")
+          .fillna("Geral")
+      )
+      meses_disponiveis = ["Todos"] + sorted(
+          [m for m in df_geral["AnoMes"].unique() if m != "Geral"]
+      )
+      mes_selecionado = st.selectbox(
+          "📅 Filtrar por Mês/Ano (Emissão):", meses_disponiveis
+      )
+
+      if mes_selecionado != "Todos":
+        df_geral = df_geral[df_geral["AnoMes"] == mes_selecionado]
+
+    # Calcula quantidades filtradas
     contagem_dados = {}
     categorias_alvo = ["Produto Bom", "Produto Ruim", "Recusa", "Reentrega"]
     for cat in categorias_alvo:
-      for nome_aba, df in abas.items():
-        if cat.lower() in nome_aba.lower():
-          contagem_dados[cat] = len(df)
+      qtd = len(
+          df_geral[
+              df_geral["Categoria_Aba"].str.lower().str.contains(cat.lower())
+          ]
+      )
+      contagem_dados[cat] = qtd
 
-    if contagem_dados:
-      df_grafico = pd.DataFrame(
-          list(contagem_dados.items()), columns=["Categoria", "Quantidade"]
-      ).set_index("Categoria")
-      st.bar_chart(df_grafico, use_container_width=True)
-    else:
-      st.warning("Não foram encontradas abas correspondentes para o gráfico.")
+    # Desenha o gráfico estático com Matplotlib (não mexe ao passar o rato)
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    fig.patch.set_facecolor("#131b2e")
+    ax.set_facecolor("#131b2e")
+
+    categorias = list(contagem_dados.keys())
+    quantidades = list(contagem_dados.values())
+    carr_cores = ["#238636", "#da3633", "#9e6a03", "#1f6feb"]
+
+    bars = ax.bar(
+        categorias, quantidades, color=carr_cores, width=0.5, edgecolor="none"
+    )
+
+    ax.tick_params(colors="#c9d1d9", labelsize=11)
+    ax.spines["bottom"].set_color("#30363d")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#30363d")
+    ax.grid(axis="y", linestyle="--", alpha=0.2, color="#8b949e")
+
+    for bar in bars:
+      height = bar.get_height()
+      ax.annotate(
+          f"{height}",
+          xy=(bar.get_x() + bar.get_width() / 2, height),
+          xytext=(0, 3),
+          textcoords="offset points",
+          ha="center",
+          va="bottom",
+          color="white",
+          fontweight="bold",
+      )
+
+    st.pyplot(fig)
 
   # ==========================================
-  # TELA 4: GRÁFICO DE VALOR (P. Bom & P. Ruim)
+  # TELA 4: GRÁFICO ESTÁTICO DE VALOR + FILTRO
   # ==========================================
   elif st.session_state.nav_mode == "Grafico_Valor":
     if st.button("⬅️ Voltar ao Menu Principal"):
@@ -229,33 +286,98 @@ else:
       st.rerun()
 
     st.markdown("---")
-    st.subheader("💰 Montante Financeiro - Produto Bom & Produto Ruim")
-    st.markdown(
-        "<p style='color: #8b949e;'>Soma total dos valores financeiros"
-        " associados às categorias de Produto Bom e Produto Ruim.</p>",
-        unsafe_allow_html=True,
+    st.subheader(
+        "💰 Montante Financeiro - Produto Bom & Produto Ruim (Gráfico Fixo)"
     )
 
-    valores_dados = {}
-    for cat in ["Produto Bom", "Produto Ruim"]:
-      for nome_aba, df in abas.items():
-        if cat.lower() in nome_aba.lower():
-          col_val = None
-          for c in df.columns:
-            if "valor" in c.lower() or "r$" in c.lower():
-              col_val = c
-              break
-          if col_val:
-            soma_val = pd.to_numeric(df[col_val], errors="coerce").sum()
-            valores_dados[cat] = round(soma_val, 2)
+    todas_linhas_val = []
+    for nome_aba, df in abas.items():
+      if "bom" in nome_aba.lower() or "ruim" in nome_aba.lower():
+        df_temp = df.copy()
+        df_temp["Categoria_Aba"] = nome_aba
+        todas_linhas_val.append(df_temp)
 
-    if valores_dados:
-      df_valores = pd.DataFrame(
-          list(valores_dados.items()), columns=["Categoria", "Valor Total (R$)"]
-      ).set_index("Categoria")
-      st.bar_chart(df_valores, use_container_width=True)
+    if todas_linhas_val:
+      df_val_geral = pd.concat(todas_linhas_val, ignore_index=True)
+
+      col_emissao = None
+      for c in df_val_geral.columns:
+        if "emiss" in c.lower():
+          col_emissao = c
+          break
+
+      if col_emissao:
+        df_val_geral["AnoMes"] = (
+            pd.to_datetime(df_val_geral[col_emissao], errors="coerce")
+            .dt.strftime("%Y-%m")
+            .fillna("Geral")
+        )
+        meses_disponiveis = ["Todos"] + sorted(
+            [m for m in df_val_geral["AnoMes"].unique() if m != "Geral"]
+        )
+        mes_selecionado = st.selectbox(
+            "📅 Filtrar por Mês/Ano (Emissão):", meses_disponiveis
+        )
+
+        if mes_selecionado != "Todos":
+          df_val_geral = df_val_geral[df_val_geral["AnoMes"] == mes_selecionado]
+
+      valores_dados = {}
+      for cat in ["Produto Bom", "Produto Ruim"]:
+        df_subset = df_val_geral[
+            df_val_geral["Categoria_Aba"].str.lower().str.contains(cat.lower())
+        ]
+        col_val = None
+        for c in df_subset.columns:
+          if "valor" in c.lower() or "r$" in c.lower():
+            col_val = c
+            break
+        if col_val:
+          soma_val = pd.to_numeric(df_subset[col_val], errors="coerce").sum()
+          valores_dados[cat] = round(soma_val, 2)
+        else:
+          valores_dados[cat] = 0.0
+
+      # Desenha gráfico estático de valores
+      fig, ax = plt.subplots(figsize=(7, 4.5))
+      fig.patch.set_facecolor("#131b2e")
+      ax.set_facecolor("#131b2e")
+
+      categorias = list(valores_dados.keys())
+      valores = list(valores_dados.values())
+      carr_cores = ["#238636", "#da3633"]
+
+      bars = ax.bar(
+          categorias,
+          valores,
+          color=carr_cores,
+          width=0.4,
+          edgecolor="none",
+      )
+
+      ax.tick_params(colors="#c9d1d9", labelsize=11)
+      ax.spines["bottom"].set_color("#30363d")
+      ax.spines["top"].set_visible(False)
+      ax.spines["right"].set_visible(False)
+      ax.spines["left"].set_color("#30363d")
+      ax.grid(axis="y", linestyle="--", alpha=0.2, color="#8b949e")
+
+      for bar in bars:
+        height = bar.get_height()
+        ax.annotate(
+            f"R$ {height:,.2f}",
+            xy=(bar.get_x() + bar.get_width() / 2, height),
+            xytext=(0, 3),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            color="white",
+            fontweight="bold",
+        )
+
+      st.pyplot(fig)
     else:
-      st.warning("Não foi possível calcular os valores financeiros das abas.")
+      st.warning("Não há dados financeiros suficientes para exibir o gráfico.")
 
   # ==========================================
   # TELA 5: CONSULTA ESPECÍFICA DA CATEGORIA
