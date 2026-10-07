@@ -2,40 +2,40 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-# Configuração da página com tema corporativo
+# Configuração da página com tema corporativo escuro
 st.set_page_config(
-    page_title="PepsiCo - Gestão e Consulta de NFs",
+    page_title="PepsiCo - Painel Operacional",
     page_icon="🔵",
     layout="wide",
 )
 
-# Estilização CSS personalizada para dar vida, cor e botões modernos
+# Estilização CSS avançada estilo Dashdark X
 st.markdown(
     """
     <style>
         .stApp {
-            background-color: #0d1117;
+            background-color: #0b0f19;
             color: #c9d1d9;
         }
         .main-header {
-            font-size: 36px;
+            font-size: 34px;
             font-weight: 800;
             color: #ffffff;
             margin-bottom: 0px;
             line-height: 1.2;
         }
         .sub-header {
-            font-size: 18px;
+            font-size: 16px;
             color: #8b949e;
             margin-top: 5px;
         }
         .welcome-card {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
             padding: 40px;
-            border-radius: 15px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             max-width: 650px;
             margin: 40px auto;
         }
@@ -44,12 +44,12 @@ st.markdown(
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #161b22;
+            background-color: #0b0f19;
             color: #8b949e;
             text-align: center;
             padding: 8px;
             font-size: 12px;
-            border-top: 1px solid #30363d;
+            border-top: 1px solid #1f293d;
         }
     </style>
 """,
@@ -72,7 +72,8 @@ with col_titulo:
       unsafe_allow_html=True,
   )
   st.markdown(
-      '<p class="sub-header">Acompanhamento Operacional em Tempo Real</p>',
+      '<p class="sub-header">Acompanhamento Operacional e Analítico em Tempo'
+      " Real</p>",
       unsafe_allow_html=True,
   )
 
@@ -98,36 +99,37 @@ if abas is None:
       " projeto!"
   )
 else:
-  # Estado da navegação guardado na sessão do Streamlit (Inicia na Tela de Boas-Vindas)
+  # Estado da navegação guardado na sessão do Streamlit
   if "nav_mode" not in st.session_state:
     st.session_state.nav_mode = "Welcome"
 
   # ==========================================
-  # TELA 1: SEJA BEM-VINDO (Com botão de avançar)
+  # TELA 1: SEJA BEM-VINDO
   # ==========================================
   if st.session_state.nav_mode == "Welcome":
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
         """
         <div class="welcome-card">
-            <h1 style="color: white; font-size: 34px; margin-bottom: 10px;">Seja Bem-Vindo! 👋</h1>
-            <p style="color: #8b949e; font-size: 18px; margin-bottom: 30px;">
-                Sistema interno de consulta e acompanhamento de Notas Fiscais e Slips da equipa PepsiCo.
+            <h1 style="color: white; font-size: 32px; margin-bottom: 10px;">Seja Bem-Vindo! 👋</h1>
+            <p style="color: #8b949e; font-size: 16px; margin-bottom: 30px;">
+                Sistema interno de consulta, gestão e análise operacional de Notas Fiscais e Slips da equipa PepsiCo.
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Botão centralizado para avançar
     col1, col_btn, col2 = st.columns([2, 2, 2])
     with col_btn:
-      if st.button("🚀 Avançar para o Sistema", use_container_width=True, type="primary"):
+      if st.button(
+          "🚀 Avançar para o Sistema", use_container_width=True, type="primary"
+      ):
         st.session_state.nav_mode = "Home"
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU COM AS 4 OPÇÕES DE CATEGORIAS
+  # TELA 2: MENU PRINCIPAL (Categorias + Gráficos)
   # ==========================================
   elif st.session_state.nav_mode == "Home":
     if st.button("⬅️ Voltar à Tela Inicial"):
@@ -136,68 +138,132 @@ else:
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
-        "<h2 style='text-align: center; color: white;'>Selecione a Categoria de Consulta:</h2>",
+        "<h3 style='text-align: center; color: white;'>Consultas por"
+        " Categoria</h3>",
         unsafe_allow_html=True,
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Injeção de estilos específicos para colorir os botões de acordo com o pedido
-    st.markdown(
-        """
-        <style>
-            /* Botão Produto Bom (Verde) */
-            div.row-widget.stButton:nth-child(1) button {
-                background-color: #238636 !important;
-                color: white !important;
-            }
-            /* Botão Produto Ruim (Vermelho) */
-            div.row-widget.stButton:nth-child(2) button {
-                background-color: #da3633 !important;
-                color: white !important;
-            }
-            /* Botão Recusa (Amarelo/Laranja corporativo) */
-            div.row-widget.stButton:nth-child(3) button {
-                background-color: #9e6a03 !important;
-                color: white !important;
-            }
-            /* Botão Reentrega (Azul) */
-            div.row-widget.stButton:nth-child(4) button {
-                background-color: #1f6feb !important;
-                color: white !important;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    col_vazia1, b1, b2, col_vazia2 = st.columns([1.5, 3, 3, 1.5])
-    with b1:
+    # Botões das 4 categorias
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
       if st.button("🟢 Produto Bom", use_container_width=True):
         st.session_state.nav_mode = "Produto Bom"
         st.rerun()
-    with b2:
+    with c2:
       if st.button("🔴 Produto Ruim", use_container_width=True):
         st.session_state.nav_mode = "Produto Ruim"
         st.rerun()
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    col_vazia3, b3, b4, col_vazia4 = st.columns([1.5, 3, 3, 1.5])
-    with b3:
+    with c3:
       if st.button("🟡 Recusa", use_container_width=True):
         st.session_state.nav_mode = "Recusa"
         st.rerun()
-    with b4:
+    with c4:
       if st.button("🔵 Reentrega", use_container_width=True):
         st.session_state.nav_mode = "Reentrega"
         st.rerun()
 
+    st.markdown("<br><hr style='border-color: #1f293d;'><br>", unsafe_allow_html=True)
+    st.markdown(
+        "<h3 style='text-align: center; color: white;'>Painéis Analíticos e"
+        " Gráficos</h3>",
+        unsafe_allow_html=True,
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Botões dos Gráficos
+    g1, g2 = st.columns(2)
+    with g1:
+      if st.button(
+          "📊 Gráfico: Quantidade de NFs por Categoria", use_container_width=True
+      ):
+        st.session_state.nav_mode = "Grafico_Qtd"
+        st.rerun()
+    with g2:
+      if st.button(
+          "💰 Gráfico: Valor Financeiro (P. Bom & P. Ruim)",
+          use_container_width=True,
+      ):
+        st.session_state.nav_mode = "Grafico_Valor"
+        st.rerun()
+
   # ==========================================
-  # TELA 3: CONSULTA ESPECÍFICA DA CATEGORIA SELECIONADA
+  # TELA 3: GRÁFICO DE QUANTIDADE DE NFs
+  # ==========================================
+  elif st.session_state.nav_mode == "Grafico_Qtd":
+    if st.button("⬅️ Voltar ao Menu Principal"):
+      st.session_state.nav_mode = "Home"
+      st.rerun()
+
+    st.markdown("---")
+    st.subheader(
+        "📊 Quantidade de Notas Fiscais Recebidas por Categoria"
+    )
+    st.markdown(
+        "<p style='color: #8b949e;'>Volume total de registos processados em cada"
+        " aba da base de dados.</p>",
+        unsafe_allow_html=True,
+    )
+
+    contagem_dados = {}
+    categorias_alvo = ["Produto Bom", "Produto Ruim", "Recusa", "Reentrega"]
+    for cat in categorias_alvo:
+      for nome_aba, df in abas.items():
+        if cat.lower() in nome_aba.lower():
+          contagem_dados[cat] = len(df)
+
+    if contagem_dados:
+      df_grafico = pd.DataFrame(
+          list(contagem_dados.items()), columns=["Categoria", "Quantidade"]
+      ).set_index("Categoria")
+      st.bar_chart(df_grafico, use_container_width=True)
+    else:
+      st.warning("Não foram encontradas abas correspondentes para o gráfico.")
+
+  # ==========================================
+  # TELA 4: GRÁFICO DE VALOR (P. Bom & P. Ruim)
+  # ==========================================
+  elif st.session_state.nav_mode == "Grafico_Valor":
+    if st.button("⬅️ Voltar ao Menu Principal"):
+      st.session_state.nav_mode = "Home"
+      st.rerun()
+
+    st.markdown("---")
+    st.subheader("💰 Montante Financeiro - Produto Bom & Produto Ruim")
+    st.markdown(
+        "<p style='color: #8b949e;'>Soma total dos valores financeiros"
+        " associados às categorias de Produto Bom e Produto Ruim.</p>",
+        unsafe_allow_html=True,
+    )
+
+    valores_dados = {}
+    for cat in ["Produto Bom", "Produto Ruim"]:
+      for nome_aba, df in abas.items():
+        if cat.lower() in nome_aba.lower():
+          col_val = None
+          for c in df.columns:
+            if "valor" in c.lower() or "r$" in c.lower():
+              col_val = c
+              break
+          if col_val:
+            soma_val = pd.to_numeric(df[col_val], errors="coerce").sum()
+            valores_dados[cat] = round(soma_val, 2)
+
+    if valores_dados:
+      df_valores = pd.DataFrame(
+          list(valores_dados.items()), columns=["Categoria", "Valor Total (R$)"]
+      ).set_index("Categoria")
+      st.bar_chart(df_valores, use_container_width=True)
+    else:
+      st.warning("Não foi possível calcular os valores financeiros das abas.")
+
+  # ==========================================
+  # TELA 5: CONSULTA ESPECÍFICA DA CATEGORIA
   # ==========================================
   else:
     categoria_ativa = st.session_state.nav_mode
 
-    if st.button("⬅️️ Voltar ao Menu de Categorias"):
+    if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
       st.rerun()
 
@@ -274,6 +340,8 @@ else:
               st.markdown("🟢 **Concluído**")
             elif "process" in status_atual or "análise" in status_atual:
               st.markdown("🟡 **Em processamento / Em Análise**")
+            elif "pendente" in status_atual:
+              st.markdown("🟠 **Pendente**")
             else:
               st.markdown(f"🔴 **{status_atual.capitalize()}**")
           else:
