@@ -9,12 +9,12 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilização CSS avançada estilo Dashdark X com cartões em vidro fosco (Glassmorphism)
+# Estilização CSS para transformar a página num painel de nível executivo
 st.markdown(
     """
     <style>
         .stApp {
-            background: linear-gradient(135deg, #070a12 0%, #0b0f19 50%, #101827 100%);
+            background: linear-gradient(135deg, #05080f 0%, #0b0f19 50%, #0f172a 100%);
             color: #c9d1d9;
         }
         .main-header {
@@ -30,7 +30,7 @@ st.markdown(
             margin-top: 5px;
         }
         .welcome-card {
-            background: rgba(19, 27, 46, 0.75);
+            background: rgba(19, 27, 46, 0.8);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 40px;
@@ -47,50 +47,12 @@ st.markdown(
             margin-bottom: 20px;
             letter-spacing: 0.5px;
         }
-        /* Cartões Estilizados */
-        .card-bom {
-            background: rgba(19, 27, 46, 0.7);
-            border: 2px solid #238636;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 8px 20px rgba(35, 134, 54, 0.15);
-            margin-bottom: 15px;
-        }
-        .card-ruim {
-            background: rgba(19, 27, 46, 0.7);
-            border: 2px solid #da3633;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 8px 20px rgba(218, 54, 51, 0.15);
-            margin-bottom: 15px;
-        }
-        .card-recusa {
-            background: rgba(19, 27, 46, 0.7);
-            border: 2px solid #d29922;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 8px 20px rgba(210, 153, 34, 0.15);
-            margin-bottom: 15px;
-        }
-        .card-reentrega {
-            background: rgba(19, 27, 46, 0.7);
-            border: 2px solid #1f6feb;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 8px 20px rgba(31, 111, 235, 0.15);
-            margin-bottom: 15px;
-        }
-        .card-title-bom { color: #238636; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .card-title-ruim { color: #da3633; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .card-title-recusa { color: #d29922; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .card-title-reentrega { color: #58a6ff; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .card-desc { color: #8b949e; font-size: 13px; margin-bottom: 15px; line-height: 1.4; min-height: 38px; }
         .footer {
             position: fixed;
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #070a12;
+            background-color: #05080f;
             color: #8b949e;
             text-align: center;
             padding: 8px;
@@ -172,7 +134,7 @@ else:
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU PRINCIPAL (ESTILO REFERÊNCIA)
+  # TELA 2: MENU PRINCIPAL (ESTILO CARTÕES UNIFICADOS)
   # ==========================================
   elif st.session_state.nav_mode == "Home":
     col_voltar, col_vazio = st.columns([1, 6])
@@ -189,13 +151,14 @@ else:
     )
     c1, c2, c3, c4 = st.columns(4)
 
-    # Cartão 1: Produto Bom
+    # Função auxiliar para desenhar o cartão com estilo unificado
     with c1:
       st.markdown(
           """
-            <div class="card-bom">
-                <div class="card-title-bom">🟢 Produto Bom</div>
-                <div class="card-desc">Consulta e verificação de notas faturadas sem ocorrências operacionais.</div>
+            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #238636; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(35, 134, 54, 0.15);">
+                <div style="font-size: 28px; margin-bottom: 5px;">📦📦</div>
+                <div style="color: #238636; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🟢 Produto Bom</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Consulta de notas faturadas sem ocorrências operacionais.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -204,13 +167,13 @@ else:
         st.session_state.nav_mode = "Produto Bom"
         st.rerun()
 
-    # Cartão 2: Produto Ruim
     with c2:
       st.markdown(
           """
-            <div class="card-ruim">
-                <div class="card-title-ruim">🔴 Ruim</div>
-                <div class="card-desc">Gestão e análise de notas fiscais com avarias ou devoluções detetadas.</div>
+            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #da3633; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(218, 54, 51, 0.15);">
+                <div style="font-size: 28px; margin-bottom: 5px;">📦❌</div>
+                <div style="color: #da3633; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🔴 Produto Ruim</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Gestão de notas fiscais com avarias ou devoluções.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -221,13 +184,13 @@ else:
         st.session_state.nav_mode = "Produto Ruim"
         st.rerun()
 
-    # Cartão 3: Recusa
     with c3:
       st.markdown(
           """
-            <div class="card-recusa">
-                <div class="card-title-recusa">🟡 Recusa</div>
-                <div class="card-desc">Acompanhamento de recusas de entrega efetuadas pelo cliente na receção.</div>
+            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #d29922; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(210, 153, 34, 0.15);">
+                <div style="font-size: 28px; margin-bottom: 5px;">📦🔄</div>
+                <div style="color: #d29922; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🟡 Recusa</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Acompanhamento de recusas de entrega efetuadas.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -238,13 +201,13 @@ else:
         st.session_state.nav_mode = "Recusa"
         st.rerun()
 
-    # Cartão 4: Reentrega
     with c4:
       st.markdown(
           """
-            <div class="card-reentrega">
-                <div class="card-title-reentrega">🔵 Reentrega</div>
-                <div class="card-desc">Monitorização de notas programadas para novas rotas de entrega.</div>
+            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #1f6feb; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(31, 111, 235, 0.15);">
+                <div style="font-size: 28px; margin-bottom: 5px;">🚚📦</div>
+                <div style="color: #58a6ff; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🔵 Reentrega</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Monitorização de notas para novas rotas.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -269,9 +232,10 @@ else:
     with g1:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.7); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; margin-bottom: 15px;">
-                <div style="color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 8px;">📈 Volume de Notas Fiscais</div>
-                <div style="color: #8b949e; font-size: 13px; margin-bottom: 15px; line-height: 1.4; min-height: 38px;">Gráfico estatístico com a quantidade de registos por categoria e filtro temporal.</div>
+            <div style="background: rgba(19, 27, 46, 0.75); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 28px; margin-bottom: 5px;">📊</div>
+                <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 8px;">Volume de Notas Fiscais</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Gráfico estatístico com quantidade de registos e filtro temporal.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -283,9 +247,10 @@ else:
     with g2:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.7); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; margin-bottom: 15px;">
-                <div style="color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 8px;">💰 Montante Financeiro (R$)</div>
-                <div style="color: #8b949e; font-size: 13px; margin-bottom: 15px; line-height: 1.4; min-height: 38px;">Análise de valores envolvidos em Produto Bom e Produto Ruim com filtros.</div>
+            <div style="background: rgba(19, 27, 46, 0.75); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 28px; margin-bottom: 5px;">💰</div>
+                <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 8px;">Montante Financeiro (R$)</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Análise de valores envolvidos com filtros dinâmicos.</div>
             </div>
             """,
           unsafe_allow_html=True,
