@@ -9,12 +9,12 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilização CSS para transformar a página num painel de nível executivo
+# Estilização CSS com o efeito glassmorphism e cores exatas da referência
 st.markdown(
     """
     <style>
         .stApp {
-            background: linear-gradient(135deg, #05080f 0%, #0b0f19 50%, #0f172a 100%);
+            background: radial-gradient(circle at 50% 30%, #111e38 0%, #070a12 70%);
             color: #c9d1d9;
         }
         .main-header {
@@ -30,13 +30,13 @@ st.markdown(
             margin-top: 5px;
         }
         .welcome-card {
-            background: rgba(19, 27, 46, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(16, 24, 40, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
             max-width: 600px;
             margin: 40px auto;
         }
@@ -47,12 +47,55 @@ st.markdown(
             margin-bottom: 20px;
             letter-spacing: 0.5px;
         }
+        
+        /* Estilos dos Cartões com Efeito de Vidro da Imagem */
+        .card-bom {
+            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 2px solid #238636;
+            padding: 24px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(35, 134, 54, 0.2);
+            margin-bottom: 12px;
+        }
+        .card-ruim {
+            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 2px solid #da3633;
+            padding: 24px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(218, 54, 51, 0.2);
+            margin-bottom: 12px;
+        }
+        .card-recusa {
+            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 2px solid #d29922;
+            padding: 24px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(210, 153, 34, 0.2);
+            margin-bottom: 12px;
+        }
+        .card-reentrega {
+            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 2px solid #1f6feb;
+            padding: 24px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(31, 111, 235, 0.2);
+            margin-bottom: 12px;
+        }
+        
         .footer {
             position: fixed;
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #05080f;
+            background-color: #070a12;
             color: #8b949e;
             text-align: center;
             padding: 8px;
@@ -134,7 +177,7 @@ else:
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU PRINCIPAL (ESTILO CARTÕES UNIFICADOS)
+  # TELA 2: MENU PRINCIPAL (ESTILO DA REFERÊNCIA)
   # ==========================================
   elif st.session_state.nav_mode == "Home":
     col_voltar, col_vazio = st.columns([1, 6])
@@ -151,14 +194,13 @@ else:
     )
     c1, c2, c3, c4 = st.columns(4)
 
-    # Função auxiliar para desenhar o cartão com estilo unificado
     with c1:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #238636; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(35, 134, 54, 0.15);">
-                <div style="font-size: 28px; margin-bottom: 5px;">📦📦</div>
-                <div style="color: #238636; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🟢 Produto Bom</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Consulta de notas faturadas sem ocorrências operacionais.</div>
+            <div class="card-bom">
+                <div style="font-size: 26px; margin-bottom: 6px;">📦🟢</div>
+                <div style="color: #238636; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Produto Bom</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Consulta de notas faturadas sem ocorrências operacionais.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -170,10 +212,10 @@ else:
     with c2:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #da3633; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(218, 54, 51, 0.15);">
-                <div style="font-size: 28px; margin-bottom: 5px;">📦❌</div>
-                <div style="color: #da3633; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🔴 Produto Ruim</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Gestão de notas fiscais com avarias ou devoluções.</div>
+            <div class="card-ruim">
+                <div style="font-size: 26px; margin-bottom: 6px;">📦❌</div>
+                <div style="color: #da3633; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Ruim</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Gestão de notas fiscais com avarias ou devoluções.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -187,10 +229,10 @@ else:
     with c3:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #d29922; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(210, 153, 34, 0.15);">
-                <div style="font-size: 28px; margin-bottom: 5px;">📦🔄</div>
-                <div style="color: #d29922; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🟡 Recusa</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Acompanhamento de recusas de entrega efetuadas.</div>
+            <div class="card-recusa">
+                <div style="font-size: 26px; margin-bottom: 6px;">📦⚠️</div>
+                <div style="color: #d29922; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Recusa</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Acompanhamento de recusas de entrega efetuadas.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -204,10 +246,10 @@ else:
     with c4:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.75); border: 2px solid #1f6feb; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(31, 111, 235, 0.15);">
-                <div style="font-size: 28px; margin-bottom: 5px;">🚚📦</div>
-                <div style="color: #58a6ff; font-size: 17px; font-weight: 700; margin-bottom: 8px;">🔵 Reentrega</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Monitorização de notas para novas rotas.</div>
+            <div class="card-reentrega">
+                <div style="font-size: 26px; margin-bottom: 6px;">🚚📦</div>
+                <div style="color: #58a6ff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Reentrega</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Monitorização de notas para novas rotas.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -232,10 +274,10 @@ else:
     with g1:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.75); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 28px; margin-bottom: 5px;">📊</div>
-                <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 8px;">Volume de Notas Fiscais</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Gráfico estatístico com quantidade de registos e filtro temporal.</div>
+            <div style="background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid #1f293d; padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
+                <div style="font-size: 26px; margin-bottom: 6px;">📈</div>
+                <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Volume de Notas Fiscais</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Gráfico estatístico com quantidade de registos e filtro temporal.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -247,10 +289,10 @@ else:
     with g2:
       st.markdown(
           """
-            <div style="background: rgba(19, 27, 46, 0.75); border: 1px solid #1f293d; padding: 22px; border-radius: 14px; text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 28px; margin-bottom: 5px;">💰</div>
-                <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 8px;">Montante Financeiro (R$)</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 40px; line-height: 1.3;">Análise de valores envolvidos com filtros dinâmicos.</div>
+            <div style="background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid #1f293d; padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
+                <div style="font-size: 26px; margin-bottom: 6px;">💰</div>
+                <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Montante Financeiro (R$)</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Análise de valores envolvidos com filtros dinâmicos.</div>
             </div>
             """,
           unsafe_allow_html=True,
