@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilização CSS refinada mantendo o design glassmorphism azulado
+# Estilização CSS com o visual glassmorphism azulado
 st.markdown(
     """
     <style>
@@ -107,10 +107,10 @@ st.markdown(
 ARQUIVO_EXCEL = "base_slips_nfs.xlsx"
 
 
-@st.cache_data(ttl=2)
+@st.cache_data(ttl=1)
 def carregar_dados():
   try:
-    return pd.read_excel(ARQUIVO_EXCEL, sheet_name=None)
+    return pd.read_excel(ARQUIVO_EXCEL, sheet_name=None, dtype=str)
   except FileNotFoundError:
     return None
 
@@ -126,9 +126,6 @@ else:
   if "nav_mode" not in st.session_state:
     st.session_state.nav_mode = "Welcome"
 
-  # ==========================================
-  # TELA 1: SEJA BEM-VINDO
-  # ==========================================
   if st.session_state.nav_mode == "Welcome":
     col_logo, col_titulo = st.columns([1.8, 5.5])
     with col_logo:
@@ -154,7 +151,7 @@ else:
         <div class="welcome-card">
             <h1 style="color: white; font-size: 28px; margin-bottom: 12px;">Seja Bem-Vindo ao Sistema Multi-CD! 👋</h1>
             <p style="color: #8b949e; font-size: 15px; margin-bottom: 30px; line-height: 1.5;">
-                Plataforma oficial de consulta e controlo de Notas Fiscais e Slips para as filiais de 001 a 030 da PepsiCo.
+                Plataforma oficial de consulta e controlo de Notas Fiscais e Slips para as filiais CDV01 a CDV30 da PepsiCo.
             </p>
         </div>
         """,
@@ -169,14 +166,13 @@ else:
         st.session_state.nav_mode = "Home"
         st.rerun()
 
-  # ==========================================
-  # TELA 2: MENU PRINCIPAL & SELETOR DE FILIAL
-  # ==========================================
   elif st.session_state.nav_mode == "Home":
-    # Cabeçalho e Seletor Global de Filial na Barra Lateral (Sidebar) ou no Topo
     with st.sidebar:
       st.markdown("### 🏢 Seletor de Filial (CD)")
-      # Extrai filiais disponíveis na base
+      if st.button("🔄 Atualizar Base do Excel", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
+
       todas_filiais = []
       for _, df in abas.items():
         if "Filial" in df.columns:
@@ -184,7 +180,7 @@ else:
       lista_filiais = sorted(list(set(todas_filiais)))
 
       if not lista_filiais:
-        lista_filiais = [f"{i:03d}" for i in range(1, 31)]
+        lista_filiais = [f"CDV{i:02d}" for i in range(1, 31)]
 
       filial_selecionada = st.selectbox(
           "Selecione o CD / Filial:", ["Todas as Filiais"] + lista_filiais
@@ -194,10 +190,8 @@ else:
         st.session_state.nav_mode = "Welcome"
         st.rerun()
 
-    # Guarda a filial selecionada no session_state para usar nas consultas e gráficos
     st.session_state.filial_ativa = filial_selecionada
 
-    # Cabeçalho Principal
     col_logo, col_titulo = st.columns([1.8, 5.5])
     with col_logo:
       try:
@@ -332,9 +326,6 @@ else:
         st.session_state.nav_mode = "Grafico_Valor"
         st.rerun()
 
-  # ==========================================
-  # TELA 3: GRÁFICO DE QUANTIDADE (COM FILTRO DE FILIAL)
-  # ==========================================
   elif st.session_state.nav_mode == "Grafico_Qtd":
     filial_ativa = st.session_state.get("filial_ativa", "Todas as Filiais")
     if st.button("⬅️ Voltar ao Menu Principal"):
@@ -354,8 +345,6 @@ else:
       todas_linhas.append(df_temp)
 
     df_geral = pd.concat(todas_linhas, ignore_index=True)
-
-    # Aplica filtro de Filial se não for "Todas"
     if filial_ativa != "Todas as Filiais" and "Filial" in df_geral.columns:
       df_geral = df_geral[df_geral["Filial"].astype(str) == filial_ativa]
 
@@ -422,9 +411,6 @@ else:
 
     st.pyplot(fig)
 
-  # ==========================================
-  # TELA 4: GRÁFICO DE VALOR (COM FILTRO DE FILIAL)
-  # ==========================================
   elif st.session_state.nav_mode == "Grafico_Valor":
     filial_ativa = st.session_state.get("filial_ativa", "Todas as Filiais")
     if st.button("⬅️ Voltar ao Menu Principal"):
@@ -445,7 +431,6 @@ else:
 
     if todas_linhas_val:
       df_val_geral = pd.concat(todas_linhas_val, ignore_index=True)
-
       if filial_ativa != "Todas as Filiais" and "Filial" in df_val_geral.columns:
         df_val_geral = df_val_geral[
             df_val_geral["Filial"].astype(str) == filial_ativa
@@ -524,9 +509,6 @@ else:
     else:
       st.warning("Não há dados financeiros suficientes para exibir o gráfico.")
 
-  # ==========================================
-  # TELA 5: CONSULTA DE NFS (COM FILTRO DE FILIAL)
-  # ==========================================
   else:
     categoria_ativa = st.session_state.nav_mode
     filial_ativa = st.session_state.get("filial_ativa", "Todas as Filiais")
@@ -548,8 +530,6 @@ else:
 
     if aba_correspondente:
       df_cat = abas[aba_correspondente]
-
-      # Filtra o dataframe da categoria pela filial ativa se não for "Todas"
       if filial_ativa != "Todas as Filiais" and "Filial" in df_cat.columns:
         df_cat = df_cat[df_cat["Filial"].astype(str) == filial_ativa]
 

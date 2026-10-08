@@ -1,4 +1,3 @@
-import random
 import pandas as pd
 
 status_opcoes = [
@@ -22,19 +21,18 @@ cnpjs = [
     "55.444.333/0001-22",
 ]
 
-# Lista de filiais de 001 até 030 formatadas com 3 dígitos (ex: "001", "002", ..., "030")
-filiais = [f"{i:03d}" for i in range(1, 31)]
+# Gera filiais como CDV01, CDV02 até CDV30
+filiais = [f"CDV{i:02d}" for i in range(1, 31)]
 
 
 def gerar_dados_aba(inicio_nf):
   dados = []
-  # Vamos gerar um volume maior de dados para abranger bem as 30 filiais
   for i in range(150):
-    num_nf = str(inicio_nf + (i % 50))  # Permite algumas NFs repetidas para teste
+    num_nf = str(inicio_nf + (i % 50))
     chave = f"352610{str(inicio_nf + i).zfill(12)}50010000{str(i+1).zfill(6)}"
     cnpj = cnpjs[i % len(cnpjs)]
     cliente = clientes[i % len(clientes)]
-    filial = filiais[i % len(filiais)]  # Distribui pelas 30 filiais
+    filial = filiais[i % len(filiais)]
     valor = round(150.0 + (i * 18.5) % 4500, 2)
     status = status_opcoes[i % len(status_opcoes)]
     emissao = f"2026-09-{(i % 28) + 1:02d}"
@@ -65,6 +63,4 @@ with pd.ExcelWriter("base_slips_nfs.xlsx", engine="openpyxl") as writer:
   df_recusa.to_excel(writer, sheet_name="Recusa", index=False)
   df_reentrega.to_excel(writer, sheet_name="Reentrega", index=False)
 
-print(
-    "Planilha multi-CD atualizada com sucesso para as filiais de 001 a 030!"
-)
+print("Base Excel multi-CD gerada com sucesso!")
