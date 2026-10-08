@@ -9,12 +9,12 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilização CSS com o efeito glassmorphism e cores exatas da referência
+# Estilização CSS com o tom de azul claro translúcido exato da referência
 st.markdown(
     """
     <style>
         .stApp {
-            background: radial-gradient(circle at 50% 30%, #111e38 0%, #070a12 70%);
+            background: linear-gradient(135deg, #0d1b33 0%, #112240 50%, #1a365d 100%);
             color: #c9d1d9;
         }
         .main-header {
@@ -30,13 +30,13 @@ st.markdown(
             margin-top: 5px;
         }
         .welcome-card {
-            background: rgba(16, 24, 40, 0.75);
+            background: rgba(23, 42, 69, 0.85);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             padding: 40px;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             max-width: 600px;
             margin: 40px auto;
         }
@@ -48,45 +48,45 @@ st.markdown(
             letter-spacing: 0.5px;
         }
         
-        /* Estilos dos Cartões com Efeito de Vidro da Imagem */
+        /* Cartões com o efeito translúcido azulado exato da imagem */
         .card-bom {
-            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
-            backdrop-filter: blur(12px);
+            background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%);
+            backdrop-filter: blur(14px);
             border: 2px solid #238636;
             padding: 24px;
             border-radius: 18px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(35, 134, 54, 0.2);
+            box-shadow: 0 10px 30px rgba(35, 134, 54, 0.25);
             margin-bottom: 12px;
         }
         .card-ruim {
-            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
-            backdrop-filter: blur(12px);
+            background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%);
+            backdrop-filter: blur(14px);
             border: 2px solid #da3633;
             padding: 24px;
             border-radius: 18px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(218, 54, 51, 0.2);
+            box-shadow: 0 10px 30px rgba(218, 54, 51, 0.25);
             margin-bottom: 12px;
         }
         .card-recusa {
-            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
-            backdrop-filter: blur(12px);
+            background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%);
+            backdrop-filter: blur(14px);
             border: 2px solid #d29922;
             padding: 24px;
             border-radius: 18px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(210, 153, 34, 0.2);
+            box-shadow: 0 10px 30px rgba(210, 153, 34, 0.25);
             margin-bottom: 12px;
         }
         .card-reentrega {
-            background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%);
-            backdrop-filter: blur(12px);
+            background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%);
+            backdrop-filter: blur(14px);
             border: 2px solid #1f6feb;
             padding: 24px;
             border-radius: 18px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(31, 111, 235, 0.2);
+            box-shadow: 0 10px 30px rgba(31, 111, 235, 0.25);
             margin-bottom: 12px;
         }
         
@@ -95,12 +95,12 @@ st.markdown(
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #070a12;
+            background-color: #0d1b33;
             color: #8b949e;
             text-align: center;
             padding: 8px;
             font-size: 12px;
-            border-top: 1px solid #1f293d;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
     </style>
 """,
@@ -261,7 +261,8 @@ else:
         st.rerun()
 
     st.markdown(
-        "<br><hr style='border-color: #1f293d;'><br>", unsafe_allow_html=True
+        "<br><hr style='border-color: rgba(255,255,255,0.1);'><br>",
+        unsafe_allow_html=True,
     )
 
     # Bloco 2: Painéis Analíticos
@@ -274,7 +275,7 @@ else:
     with g1:
       st.markdown(
           """
-            <div style="background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid #1f293d; padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
+            <div style="background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.1); padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
                 <div style="font-size: 26px; margin-bottom: 6px;">📈</div>
                 <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Volume de Notas Fiscais</div>
                 <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Gráfico estatístico com quantidade de registos e filtro temporal.</div>
@@ -289,7 +290,7 @@ else:
     with g2:
       st.markdown(
           """
-            <div style="background: linear-gradient(145deg, rgba(16, 24, 40, 0.85) 0%, rgba(10, 16, 28, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid #1f293d; padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
+            <div style="background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.1); padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
                 <div style="font-size: 26px; margin-bottom: 6px;">💰</div>
                 <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Montante Financeiro (R$)</div>
                 <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Análise de valores envolvidos com filtros dinâmicos.</div>
@@ -352,8 +353,8 @@ else:
       contagem_dados[cat] = qtd
 
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    fig.patch.set_facecolor("#131b2e")
-    ax.set_facecolor("#131b2e")
+    fig.patch.set_facecolor("#112240")
+    ax.set_facecolor("#112240")
 
     bars = ax.bar(
         list(contagem_dados.keys()),
@@ -445,8 +446,8 @@ else:
           valores_dados[cat] = 0.0
 
       fig, ax = plt.subplots(figsize=(7, 4.5))
-      fig.patch.set_facecolor("#131b2e")
-      ax.set_facecolor("#131b2e")
+      fig.patch.set_facecolor("#112240")
+      ax.set_facecolor("#112240")
 
       bars = ax.bar(
           list(valores_dados.keys()),
