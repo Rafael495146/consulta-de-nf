@@ -4,12 +4,12 @@ import pandas as pd
 import streamlit as st
 
 st.set_page_config(
-    page_title="PepsiCo - Painel Operacional",
+    page_title="PepsiCo - Painel Multi-CD Operacional",
     page_icon="🔵",
     layout="wide",
 )
 
-# Estilização CSS com o tom de azul claro translúcido exato da referência
+# Estilização CSS refinada mantendo o design glassmorphism azulado
 st.markdown(
     """
     <style>
@@ -18,14 +18,14 @@ st.markdown(
             color: #c9d1d9;
         }
         .main-header {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 800;
             color: #ffffff;
             margin-bottom: 0px;
             line-height: 1.2;
         }
         .sub-header {
-            font-size: 15px;
+            font-size: 14px;
             color: #8b949e;
             margin-top: 5px;
         }
@@ -47,8 +47,6 @@ st.markdown(
             margin-bottom: 20px;
             letter-spacing: 0.5px;
         }
-        
-        /* Cartões com o efeito translúcido azulado exato da imagem */
         .card-bom {
             background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%);
             backdrop-filter: blur(14px);
@@ -89,7 +87,6 @@ st.markdown(
             box-shadow: 0 10px 30px rgba(31, 111, 235, 0.25);
             margin-bottom: 12px;
         }
-        
         .footer {
             position: fixed;
             left: 0;
@@ -106,28 +103,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-col_logo, col_titulo = st.columns([1.8, 5.5])
-
-with col_logo:
-  try:
-    st.image("logo.png", width=240)
-  except:
-    st.write("🔵")
-
-with col_titulo:
-  st.markdown("<br>", unsafe_allow_html=True)
-  st.markdown(
-      '<p class="main-header">PepsiCo - Painel de NFs e Slips</p>',
-      unsafe_allow_html=True,
-  )
-  st.markdown(
-      '<p class="sub-header">Acompanhamento Operacional e Analítico em Tempo'
-      " Real</p>",
-      unsafe_allow_html=True,
-  )
-
-st.markdown("---")
 
 ARQUIVO_EXCEL = "base_slips_nfs.xlsx"
 
@@ -155,13 +130,31 @@ else:
   # TELA 1: SEJA BEM-VINDO
   # ==========================================
   if st.session_state.nav_mode == "Welcome":
+    col_logo, col_titulo = st.columns([1.8, 5.5])
+    with col_logo:
+      try:
+        st.image("logo.png", width=240)
+      except:
+        st.write("🔵")
+    with col_titulo:
+      st.markdown("<br>", unsafe_allow_html=True)
+      st.markdown(
+          '<p class="main-header">PepsiCo - Painel Multi-CD NFs e Slips</p>',
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          '<p class="sub-header">Gestão Operacional Integrada para Múltiplas'
+          " Filiais (CDv)</p>",
+          unsafe_allow_html=True,
+      )
+
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
         """
         <div class="welcome-card">
-            <h1 style="color: white; font-size: 28px; margin-bottom: 12px;">Seja Bem-Vindo! 👋</h1>
+            <h1 style="color: white; font-size: 28px; margin-bottom: 12px;">Seja Bem-Vindo ao Sistema Multi-CD! 👋</h1>
             <p style="color: #8b949e; font-size: 15px; margin-bottom: 30px; line-height: 1.5;">
-                Sistema interno de consulta, gestão e análise operacional de Notas Fiscais e Slips da equipa PepsiCo.
+                Plataforma oficial de consulta e controlo de Notas Fiscais e Slips para as filiais de 001 a 030 da PepsiCo.
             </p>
         </div>
         """,
@@ -171,21 +164,59 @@ else:
     col1, col_btn, col2 = st.columns([2, 2, 2])
     with col_btn:
       if st.button(
-          "🚀 Avançar para o Sistema", use_container_width=True, type="primary"
+          "🚀 Entrar no Painel", use_container_width=True, type="primary"
       ):
         st.session_state.nav_mode = "Home"
         st.rerun()
 
   # ==========================================
-  # TELA 2: MENU PRINCIPAL (ESTILO DA REFERÊNCIA)
+  # TELA 2: MENU PRINCIPAL & SELETOR DE FILIAL
   # ==========================================
   elif st.session_state.nav_mode == "Home":
-    col_voltar, col_vazio = st.columns([1, 6])
-    with col_voltar:
-      if st.button("⬅️ Início"):
+    # Cabeçalho e Seletor Global de Filial na Barra Lateral (Sidebar) ou no Topo
+    with st.sidebar:
+      st.markdown("### 🏢 Seletor de Filial (CD)")
+      # Extrai filiais disponíveis na base
+      todas_filiais = []
+      for _, df in abas.items():
+        if "Filial" in df.columns:
+          todas_filiais.extend(df["Filial"].dropna().astype(str).unique())
+      lista_filiais = sorted(list(set(todas_filiais)))
+
+      if not lista_filiais:
+        lista_filiais = [f"{i:03d}" for i in range(1, 31)]
+
+      filial_selecionada = st.selectbox(
+          "Selecione o CD / Filial:", ["Todas as Filiais"] + lista_filiais
+      )
+      st.markdown("---")
+      if st.button("⬅️ Voltar à Tela Inicial", use_container_width=True):
         st.session_state.nav_mode = "Welcome"
         st.rerun()
 
+    # Guarda a filial selecionada no session_state para usar nas consultas e gráficos
+    st.session_state.filial_ativa = filial_selecionada
+
+    # Cabeçalho Principal
+    col_logo, col_titulo = st.columns([1.8, 5.5])
+    with col_logo:
+      try:
+        st.image("logo.png", width=220)
+      except:
+        st.write("🔵")
+    with col_titulo:
+      st.markdown("<br>", unsafe_allow_html=True)
+      st.markdown(
+          '<p class="main-header">PepsiCo - Painel Multi-CD</p>',
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          f'<p class="sub-header">Filial Ativa: <b>{filial_selecionada}</b> |'
+          " Controlo Operacional em Tempo Real</p>",
+          unsafe_allow_html=True,
+      )
+
+    st.markdown("---")
     st.markdown("<br>", unsafe_allow_html=True)
 
     st.markdown(
@@ -200,7 +231,7 @@ else:
             <div class="card-bom">
                 <div style="font-size: 26px; margin-bottom: 6px;">📦🟢</div>
                 <div style="color: #238636; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Produto Bom</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Consulta de notas faturadas sem ocorrências operacionais.</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Notas faturadas sem ocorrências operacionais.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -215,7 +246,7 @@ else:
             <div class="card-ruim">
                 <div style="font-size: 26px; margin-bottom: 6px;">📦❌</div>
                 <div style="color: #da3633; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Ruim</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Gestão de notas fiscais com avarias ou devoluções.</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Notas fiscais com avarias ou devoluções.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -232,7 +263,7 @@ else:
             <div class="card-recusa">
                 <div style="font-size: 26px; margin-bottom: 6px;">📦⚠️</div>
                 <div style="color: #d29922; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Recusa</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Acompanhamento de recusas de entrega efetuadas.</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Acompanhamento de recusas de entrega.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -265,7 +296,6 @@ else:
         unsafe_allow_html=True,
     )
 
-    # Bloco 2: Painéis Analíticos
     st.markdown(
         '<p class="section-title">📊 Painéis Analíticos e Gráficos Estáticos</p>',
         unsafe_allow_html=True,
@@ -278,7 +308,7 @@ else:
             <div style="background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.1); padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
                 <div style="font-size: 26px; margin-bottom: 6px;">📈</div>
                 <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Volume de Notas Fiscais</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Gráfico estatístico com quantidade de registos e filtro temporal.</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Gráfico estatístico filtrado por filial e período.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -293,7 +323,7 @@ else:
             <div style="background: linear-gradient(145deg, rgba(23, 42, 69, 0.9) 0%, rgba(15, 30, 50, 0.95) 100%); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.1); padding: 22px; border-radius: 18px; text-align: center; margin-bottom: 12px;">
                 <div style="font-size: 26px; margin-bottom: 6px;">💰</div>
                 <div style="color: #ffffff; font-size: 17px; font-weight: 700; margin-bottom: 6px;">Montante Financeiro (R$)</div>
-                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Análise de valores envolvidos com filtros dinâmicos.</div>
+                <div style="color: #8b949e; font-size: 12px; min-height: 38px; line-height: 1.3;">Análise de valores filtrada por filial e período.</div>
             </div>
             """,
           unsafe_allow_html=True,
@@ -303,16 +333,18 @@ else:
         st.rerun()
 
   # ==========================================
-  # TELA 3: GRÁFICO ESTÁTICO DE QUANTIDADE
+  # TELA 3: GRÁFICO DE QUANTIDADE (COM FILTRO DE FILIAL)
   # ==========================================
   elif st.session_state.nav_mode == "Grafico_Qtd":
+    filial_ativa = st.session_state.get("filial_ativa", "Todas as Filiais")
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
       st.rerun()
 
     st.markdown("---")
     st.subheader(
-        "📊 Quantidade de Notas Fiscais por Categoria (Gráfico Fixo)"
+        f"📊 Quantidade de Notas Fiscais por Categoria (Filial:"
+        f" {filial_ativa})"
     )
 
     todas_linhas = []
@@ -322,6 +354,11 @@ else:
       todas_linhas.append(df_temp)
 
     df_geral = pd.concat(todas_linhas, ignore_index=True)
+
+    # Aplica filtro de Filial se não for "Todas"
+    if filial_ativa != "Todas as Filiais" and "Filial" in df_geral.columns:
+      df_geral = df_geral[df_geral["Filial"].astype(str) == filial_ativa]
+
     col_emissao = None
     for c in df_geral.columns:
       if "emiss" in c.lower():
@@ -386,16 +423,17 @@ else:
     st.pyplot(fig)
 
   # ==========================================
-  # TELA 4: GRÁFICO ESTÁTICO DE VALOR
+  # TELA 4: GRÁFICO DE VALOR (COM FILTRO DE FILIAL)
   # ==========================================
   elif st.session_state.nav_mode == "Grafico_Valor":
+    filial_ativa = st.session_state.get("filial_ativa", "Todas as Filiais")
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
       st.rerun()
 
     st.markdown("---")
     st.subheader(
-        "💰 Montante Financeiro - Produto Bom & Produto Ruim (Gráfico Fixo)"
+        f"💰 Montante Financeiro - Produto Bom & Ruim (Filial: {filial_ativa})"
     )
 
     todas_linhas_val = []
@@ -407,6 +445,12 @@ else:
 
     if todas_linhas_val:
       df_val_geral = pd.concat(todas_linhas_val, ignore_index=True)
+
+      if filial_ativa != "Todas as Filiais" and "Filial" in df_val_geral.columns:
+        df_val_geral = df_val_geral[
+            df_val_geral["Filial"].astype(str) == filial_ativa
+        ]
+
       col_emissao = None
       for c in df_val_geral.columns:
         if "emiss" in c.lower():
@@ -481,17 +525,20 @@ else:
       st.warning("Não há dados financeiros suficientes para exibir o gráfico.")
 
   # ==========================================
-  # TELA 5: CONSULTA ESPECÍFICA DA CATEGORIA
+  # TELA 5: CONSULTA DE NFS (COM FILTRO DE FILIAL)
   # ==========================================
   else:
     categoria_ativa = st.session_state.nav_mode
+    filial_ativa = st.session_state.get("filial_ativa", "Todas as Filiais")
 
     if st.button("⬅️ Voltar ao Menu Principal"):
       st.session_state.nav_mode = "Home"
       st.rerun()
 
     st.markdown("---")
-    st.subheader(f"🔍 Consultar em: {categoria_ativa}")
+    st.subheader(
+        f"🔍 Consultar em: {categoria_ativa} | Filial: {filial_ativa}"
+    )
 
     aba_correspondente = None
     for nome_aba in abas.keys():
@@ -502,9 +549,13 @@ else:
     if aba_correspondente:
       df_cat = abas[aba_correspondente]
 
+      # Filtra o dataframe da categoria pela filial ativa se não for "Todas"
+      if filial_ativa != "Todas as Filiais" and "Filial" in df_cat.columns:
+        df_cat = df_cat[df_cat["Filial"].astype(str) == filial_ativa]
+
       termo_busca = st.text_input(
-          f"Digite o Número da NF ou Chave de Acesso ({categoria_ativa}):",
-          placeholder="Ex: 10457 ou 352610...",
+          f"Digite o Número da NF ou Chave de Acesso:",
+          placeholder="Ex: 10001 ou 352610...",
       )
 
       if st.button("Pesquisar", type="primary"):
@@ -521,8 +572,8 @@ else:
 
           if not matches_all.empty:
             st.success(
-                f"✨ Encontrado(s) {len(matches_all)} registo(s) na categoria"
-                f" **{categoria_ativa}**!"
+                f"✨ Encontrado(s) {len(matches_all)} registo(s) na filial"
+                f" **{filial_ativa}**!"
             )
 
             for idx, row in matches_all.iterrows():
@@ -535,6 +586,7 @@ else:
                     return "N/D" if pd.isna(val) else val
                 return "N/D"
 
+              filial_reg = pegar_val(["Filial"])
               cliente = pegar_val(["Nome_Cliente", "Cliente"])
               cnpj = pegar_val(["CNPJ"])
               num_nf = pegar_val(["Numero_NF", "Número da NF", "NF", "Nota"])
@@ -548,7 +600,8 @@ else:
 
               with st.container():
                 st.markdown(
-                    f"--- \n **🏢 Cliente:** `{cliente}` | **CNPJ:** `{cnpj}`"
+                    f"--- \n 🏢 **Filial:** `{filial_reg}` | **Cliente:**"
+                    f" `{cliente}` | **CNPJ:** `{cnpj}`"
                 )
                 c1, c2 = st.columns(2)
                 with c1:
@@ -572,18 +625,14 @@ else:
                   st.markdown(f"🔴 **{status_atual.capitalize()}**")
           else:
             st.error(
-                f"Nenhum registo correspondente encontrado em '{categoria_ativa}'"
-                " com o termo informado."
+                f"Nenhum registo encontrado na filial '{filial_ativa}' com o"
+                " termo informado."
             )
     else:
-      st.warning(
-          f"Ainda não existe uma aba no Excel com o nome equivalente a"
-          f" '{categoria_ativa}'. Certifique-se de que o ficheiro Excel"
-          f" possui essa aba configurada!"
-      )
+      st.warning(f"A aba '{categoria_ativa}' não foi encontrada na planilha.")
 
 st.markdown(
-    '<div class="footer">© PepsiCo Brasil - Internal Tool | Sistema'
-    " Operacional Móvel</div>",
+    '<div class="footer">© PepsiCo Brasil - Sistema Multi-CD | Operacional'
+    " de NFs e Slips</div>",
     unsafe_allow_html=True,
 )

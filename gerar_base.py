@@ -1,6 +1,12 @@
+import random
 import pandas as pd
 
-status_opcoes = ["Concluído", "Em Processamento", "Pendente", "Não Entregue"]
+status_opcoes = [
+    "Operação Concluída",
+    "Em Processamento na Logística",
+    "Pendente de Aprovação",
+    "Não Entregue / Ocorrência",
+]
 clientes = [
     "Supermercado Alvorada Ltda",
     "Comercial São José",
@@ -16,25 +22,26 @@ cnpjs = [
     "55.444.333/0001-22",
 ]
 
+# Lista de filiais de 001 até 030 formatadas com 3 dígitos (ex: "001", "002", ..., "030")
+filiais = [f"{i:03d}" for i in range(1, 31)]
+
 
 def gerar_dados_aba(inicio_nf):
   dados = []
-  for i in range(25):
-    # Força algumas NFs com o mesmo número para testar a duplicidade (ex: a NF 10005 repete-se para dois clientes)
-    if i == 5:
-      num_nf = str(inicio_nf + 4)
-    else:
-      num_nf = str(inicio_nf + i)
-
+  # Vamos gerar um volume maior de dados para abranger bem as 30 filiais
+  for i in range(150):
+    num_nf = str(inicio_nf + (i % 50))  # Permite algumas NFs repetidas para teste
     chave = f"352610{str(inicio_nf + i).zfill(12)}50010000{str(i+1).zfill(6)}"
     cnpj = cnpjs[i % len(cnpjs)]
     cliente = clientes[i % len(clientes)]
-    valor = round(150.0 + (i * 35.5), 2)
+    filial = filiais[i % len(filiais)]  # Distribui pelas 30 filiais
+    valor = round(150.0 + (i * 18.5) % 4500, 2)
     status = status_opcoes[i % len(status_opcoes)]
     emissao = f"2026-09-{(i % 28) + 1:02d}"
     atualizacao = f"2026-10-{(i % 6) + 1:02d}"
 
     dados.append({
+        "Filial": filial,
         "Nome_Cliente": cliente,
         "CNPJ": cnpj,
         "Numero_NF": num_nf,
@@ -58,4 +65,6 @@ with pd.ExcelWriter("base_slips_nfs.xlsx", engine="openpyxl") as writer:
   df_recusa.to_excel(writer, sheet_name="Recusa", index=False)
   df_reentrega.to_excel(writer, sheet_name="Reentrega", index=False)
 
-print("Planilha atualizada com clientes e suporte a duplicados!")
+print(
+    "Planilha multi-CD atualizada com sucesso para as filiais de 001 a 030!"
+)
